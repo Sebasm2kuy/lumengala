@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "outDir": "tests/dist",
+    "rootDir": ".",
+    "strict": true,
+    "noEmitOnError": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "types": ["node"]
+  },
+  "include": [
+    "tests/**/*.ts",
+    "src/lib/cuenta-regresiva.ts",
+    "src/lib/colecciones.ts"
+  ]
+}
