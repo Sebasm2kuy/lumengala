@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { Check, Leaf, Minus, Music2, Smartphone } from "lucide-react";
 import Revelar from "@/components/revelar";
+import { rutaPublica } from "@/lib/base-ruta";
 
 const PILARES = [
   {
@@ -43,7 +44,7 @@ export default function Comparativa() {
             <div className="anillo-arco">
               <div className="arco relative aspect-[3/4] overflow-hidden border border-dorado/35 shadow-[0_40px_80px_-40px_rgba(43,38,32,0.45)]">
                 <Image
-                  src="/img/camila.jpg"
+                  src={rutaPublica("/img/camila.jpg")}
                   alt="Ramo rosado en arco editorial de la colección Camila"
                   fill
                   sizes="(min-width: 1024px) 420px, 90vw"

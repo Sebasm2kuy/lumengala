@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { Sparkles, Video } from "lucide-react";
 import Revelar from "@/components/revelar";
+import { rutaPublica } from "@/lib/base-ruta";
 
 /* Canales reales de contacto de Lumen Gala Studio (mismos que producción). */
 const WHATSAPP =
@@ -23,7 +24,7 @@ export default function Cierre() {
       {/* fondo de seda champagne */}
       <div className="absolute inset-0" aria-hidden="true">
         <Image
-          src="/img/seda-champagne.jpg"
+          src={rutaPublica("/img/seda-champagne.jpg")}
           alt=""
           fill
           sizes="100vw"
