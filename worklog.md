@@ -30,3 +30,21 @@ Registro de trabajo del repo aislado de diseño. La producción real
 - Aislamiento confirmado: lumengala.site intacta (200, sin rastro de la
   propuesta, demos y /estudio/ operando).
 - Detalle completo en `IDEAS/ITERACION-2026-11-03-044-DIRECCION-LUMINOSA.md`.
+
+## 2026-11-03 · Iteración 044b — Corrección de imágenes con basePath
+
+- Hallazgo en la prueba publicada: las 7 imágenes (6 obras del museo, arco
+  editorial, 3 miniaturas y seda champagne) daban 404. Causa raíz: next/image
+  con `unoptimized: true` NO antepone basePath al src emitido (el prefijo lo
+  aplican los loaders de optimización, desactivados acá), así que
+  src="/img/x.jpg" resolvía a la raíz del dominio en vez de /lumengala/img/.
+- Fix: helper `rutaPublica()` en src/lib/base-ruta.ts (usa
+  NEXT_PUBLIC_BASE_PATH; en producción sin la variable queda igual) aplicado
+  en colecciones, comparativa, experiencia y cierre.
+- Verificación con el export servido bajo /lumengala/ (como Pages real):
+  11/11 imágenes cargadas (naturalWidth > 0), consola sin errores, countdown
+  en vivo tictaqueando (278 d), botón flotante fixed, sin overflow a 390×844,
+  filtros del museo y hover intactos. Capturas revisadas (héroe, museo, arco).
+- Calidad: lint 0 · typecheck 0 · 13/13 tests · build EXIT=0 con basePath.
+  Ciclo git: rama fix/044b-imagenes-basepath (36e19bf) -> PR #2 -> merge ->
+  deploy Pages del repo de prueba, publicación verificada en vivo.
