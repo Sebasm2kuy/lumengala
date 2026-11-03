@@ -10,6 +10,7 @@ import {
 } from "@/lib/colecciones";
 import type { FiltroColeccion } from "@/lib/colecciones";
 import Revelar from "@/components/revelar";
+import { rutaPublica } from "@/lib/base-ruta";
 
 export default function Colecciones() {
   const [filtro, setFiltro] = useState<FiltroColeccion>("todas");
@@ -86,7 +87,7 @@ export default function Colecciones() {
               <div className="marco-obra">
                 <div className="relative aspect-[4/5] overflow-hidden rounded-[3px]">
                   <Image
-                    src={`/img/${obra.imagen}.jpg`}
+                    src={rutaPublica(`/img/${obra.imagen}.jpg`)}
                     alt={`Obra ${obra.nombre} — ${obra.descripcion}`}
                     fill
                     sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"

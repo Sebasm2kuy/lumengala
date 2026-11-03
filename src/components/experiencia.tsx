@@ -22,6 +22,7 @@ import {
 } from "@/lib/cuenta-regresiva";
 import { useAhora } from "@/hooks/use-ahora";
 import Revelar from "@/components/revelar";
+import { rutaPublica } from "@/lib/base-ruta";
 
 /* ── Tarjeta 1 · Música y diseño a medida ──────────────────────────────── */
 
@@ -381,7 +382,7 @@ function TarjetaGaleria() {
       <div className="grid h-[240px] grid-cols-3 grid-rows-2 gap-2.5">
         <figure className="zoom-editorial relative col-span-2 row-span-2 overflow-hidden rounded-2xl">
           <Image
-            src="/img/rose-couture.jpg"
+            src={rutaPublica("/img/rose-couture.jpg")}
             alt="Rosas en cascada de la colección Rosé Couture"
             fill
             sizes="(min-width: 768px) 380px, 90vw"
@@ -395,7 +396,7 @@ function TarjetaGaleria() {
         </figure>
         <figure className="zoom-editorial relative overflow-hidden rounded-2xl">
           <Image
-            src="/img/aurora.jpg"
+            src={rutaPublica("/img/aurora.jpg")}
             alt="Cielo de medianoche dorado de la colección Aurora"
             fill
             sizes="180px"
@@ -404,7 +405,7 @@ function TarjetaGaleria() {
         </figure>
         <figure className="zoom-editorial relative overflow-hidden rounded-2xl">
           <Image
-            src="/img/camila.jpg"
+            src={rutaPublica("/img/camila.jpg")}
             alt="Arco rosado de la colección Camila"
             fill
             sizes="180px"
