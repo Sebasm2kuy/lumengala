@@ -48,3 +48,28 @@ Registro de trabajo del repo aislado de diseño. La producción real
 - Calidad: lint 0 · typecheck 0 · 13/13 tests · build EXIT=0 con basePath.
   Ciclo git: rama fix/044b-imagenes-basepath (36e19bf) -> PR #2 -> merge ->
   deploy Pages del repo de prueba, publicación verificada en vivo.
+
+## 2026-11-07 · Iteración 044c — Responsive móvil: corte inferior y ajustes finos
+
+- Reporte en revisión móvil: el final de la página se veía cortado — el pie
+  tenía py-9 (36 px de aire inferior) y el botón flotante "Encargar" (fijo,
+  47 px de alto) tapaba el email y el aviso al llegar al final del scroll.
+- Fix pie: `py-9` -> `pb-32 pt-9` en móvil (128 px) y `md:pb-24` en fila de
+  escritorio; el contenido del pie queda siempre por encima de la franja del
+  botón flotante.
+- Fix botón flotante: `bottom-5/sm:bottom-7` ->
+  `calc(... + env(safe-area-inset-bottom, 0px))` para no quedar pegado a la
+  barra home de iOS.
+- Endurecido overflow horizontal: `overflow-x: clip` en html y body (hidden
+  queda como fallback; clip no crea contenedor de scroll y anula el rebote
+  lateral decorativo en iOS).
+- E2E móvil (emulación iPhone 14, 390×844) sobre el export servido bajo
+  /lumengala/: scrollWidth 390 = clientWidth (sin overflow), grids de
+  experiencia/colecciones/pilares a 1 columna con márgenes de 20 px, botón
+  NO intersecta logo ni contacto del pie (61 px de aire), pie con 128 px
+  bajo el último contenido; tabla comparativa scrollea adentro de su
+  contenedor (560 px) sin expandir la página. Recheck a 360×740: sin
+  overflow. Capturas revisadas: héroe, experiencia, museo, final.
+- Calidad: lint 0 · typecheck 0 · 13/13 tests · build EXIT=0 con basePath.
+  Ciclo git: rama fix/044c-responsive-movil -> PR -> escaneo anti-fugas ->
+  merge -> verificación del deploy del repo de prueba.
