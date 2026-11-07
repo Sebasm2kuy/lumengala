@@ -25,12 +25,18 @@
 
 html {
   scroll-behavior: smooth;
+  /* clip (a diferencia de hidden) no crea contenedor de scroll: los
+     elementos fixed siguen anclados al viewport y desaparece cualquier
+     rebote horizontal decorativo en iOS. Los navegadores sin soporte de
+     clip lo ignoran y quedan cubiertos por el hidden del body. */
+  overflow-x: clip;
 }
 
 body {
   background-color: #faf9f5;
   color: #2b2620;
   overflow-x: hidden;
+  overflow-x: clip;
 }
 
 ::selection {

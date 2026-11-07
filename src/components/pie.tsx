@@ -3,7 +3,11 @@ import { Mail } from "lucide-react";
 export default function Pie() {
   return (
     <footer className="border-t filete bg-marfil">
-      <div className="mx-auto flex w-full max-w-6xl flex-col items-center justify-between gap-5 px-5 py-9 text-center sm:px-8 md:flex-row md:text-left">
+      {/* pb-32 en móvil: deja aire para que el botón flotante "Encargar"
+          (fijo, abajo a la derecha) no tape el contacto ni el aviso al
+          llegar al final de la página. En md+ el pie pasa a una fila y
+          basta con pb-24. */}
+      <div className="mx-auto flex w-full max-w-6xl flex-col items-center justify-between gap-5 px-5 pb-32 pt-9 text-center sm:px-8 md:flex-row md:pb-24 md:text-left">
         <div className="flex items-center gap-2.5">
           <svg viewBox="0 0 48 48" className="h-8 w-8" aria-hidden="true">
             <rect

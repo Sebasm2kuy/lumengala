@@ -32,7 +32,9 @@ export default function BotonEncargar() {
       aria-hidden={!visible}
       tabIndex={visible ? 0 : -1}
       aria-label="Encargar mi invitación (abre WhatsApp)"
-      className={`fixed bottom-5 right-5 z-50 transition-all duration-500 sm:bottom-7 sm:right-7 ${
+      /* Respeta el safe-area de iOS (barra home) para no quedar pegado
+         ni cortado contra el borde inferior del celular. */
+      className={`fixed right-5 z-50 bottom-[calc(1.25rem+env(safe-area-inset-bottom,0px))] transition-all duration-500 sm:right-7 sm:bottom-[calc(1.75rem+env(safe-area-inset-bottom,0px))] ${
         visible
           ? "translate-y-0 opacity-100"
           : "pointer-events-none translate-y-5 opacity-0"
