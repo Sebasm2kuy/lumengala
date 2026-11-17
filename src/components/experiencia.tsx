@@ -19,6 +19,8 @@ import {
   calcularCuentaRegresiva,
   DESTINO_BODA_MS,
   DESTINO_QUINCE_MS,
+  dosDigitos,
+  type Restante,
 } from "@/lib/cuenta-regresiva";
 import { useAhora } from "@/hooks/use-ahora";
 import Revelar from "@/components/revelar";
@@ -182,119 +184,53 @@ function TarjetaMusicaDiseno() {
   );
 }
 
-/* ── Tarjeta 2 · Cuentas regresivas (reloj analógico en vivo) ──────────── */
+/* ── Tarjeta 2 · Cuentas regresivas (contador numérico en vivo) ────────── */
 
-const EVENTOS_RELOJ = [
+const EVENTOS_CONTADOR = [
   { id: "boda", etiqueta: "Boda · 08.08.27", destino: DESTINO_BODA_MS, frase: "para el «sí quiero»" },
   { id: "quince", etiqueta: "XV · 15.11.27", destino: DESTINO_QUINCE_MS, frase: "para el gran 15" },
 ] as const;
 
-function RelojAnalogo() {
-  const ahora = useAhora(50);
-  const fecha = ahora === null ? null : new Date(ahora);
-
-  const segundos = fecha ? fecha.getSeconds() + fecha.getMilliseconds() / 1000 : 0;
-  const minutos = fecha ? fecha.getMinutes() + segundos / 60 : 0;
-  const horas = fecha ? (fecha.getHours() % 12) + minutos / 60 : 0;
+/* Contador numérico y tipográfico, igual al de las invitaciones reales:
+   cuatro columnas serenas con filetes dorados, sin relojes ni adornos. */
+function ContadorNumerico({ restante }: { restante: Restante | null }) {
+  const partes = [
+    { valor: restante ? String(restante.dias) : "—", etiqueta: "Días" },
+    { valor: restante ? dosDigitos(restante.horas) : "—", etiqueta: "Horas" },
+    { valor: restante ? dosDigitos(restante.minutos) : "—", etiqueta: "Min" },
+    { valor: restante ? dosDigitos(restante.segundos) : "—", etiqueta: "Seg" },
+  ];
 
   return (
-    <svg
-      viewBox="0 0 200 200"
-      className="mx-auto h-[188px] w-[188px] drop-shadow-[0_18px_30px_rgba(43,38,32,0.16)]"
-      role="img"
+    <div
+      className="grid grid-cols-4 rounded-2xl border border-dorado/25 bg-white/50"
+      role="timer"
       aria-label={
-        fecha
-          ? `Reloj en tiempo real: ${fecha.toLocaleTimeString("es-UY")}`
-          : "Reloj en tiempo real"
+        restante
+          ? `Faltan ${restante.dias} días, ${restante.horas} horas, ${restante.minutos} minutos y ${restante.segundos} segundos`
+          : "Cuenta regresiva cargando"
       }
     >
-      <defs>
-        <radialGradient id="cara-reloj" cx="38%" cy="30%" r="80%">
-          <stop offset="0%" stopColor="#fffdf6" />
-          <stop offset="70%" stopColor="#faf6ea" />
-          <stop offset="100%" stopColor="#f0e8d2" />
-        </radialGradient>
-      </defs>
-
-      {/* esfera */}
-      <circle cx="100" cy="100" r="94" fill="url(#cara-reloj)" stroke="#d4af37" strokeWidth="1.5" />
-      <circle cx="100" cy="100" r="86" fill="none" stroke="#d4af37" strokeOpacity="0.28" strokeWidth="0.8" />
-
-      {/* marcas horarias */}
-      {Array.from({ length: 12 }).map((_, i) => (
-        <line
-          key={i}
-          x1="100"
-          y1={i % 3 === 0 ? "14" : "16"}
-          x2="100"
-          y2={i % 3 === 0 ? "26" : "22"}
-          stroke={i % 3 === 0 ? "#a9832b" : "#d4af37"}
-          strokeOpacity={i % 3 === 0 ? 1 : 0.55}
-          strokeWidth={i % 3 === 0 ? "2.2" : "1.2"}
-          strokeLinecap="round"
-          transform={`rotate(${i * 30} 100 100)`}
-        />
-      ))}
-
-      {/* números cardinales */}
-      {[
-        { x: 100, y: 42, t: "12" },
-        { x: 160, y: 105, t: "3" },
-        { x: 100, y: 166, t: "6" },
-        { x: 40, y: 105, t: "9" },
-      ].map((n) => (
-        <text
-          key={n.t}
-          x={n.x}
-          y={n.y}
-          textAnchor="middle"
-          fontSize="13"
-          fill="#6b6357"
-          style={{ fontFamily: "var(--font-cormorant), serif" }}
+      {partes.map((p, i) => (
+        <div
+          key={p.etiqueta}
+          className={`px-1 py-5 text-center ${i > 0 ? "border-l border-dorado/20" : ""}`}
         >
-          {n.t}
-        </text>
+          <p className="font-serif text-[34px] leading-none text-tinta tabular-nums sm:text-[44px]">
+            {p.valor}
+          </p>
+          <p className="mt-2.5 text-[10px] uppercase tracking-[0.28em] text-tinta-suave">
+            {p.etiqueta}
+          </p>
+        </div>
       ))}
-
-      {/* manecillas */}
-      <line
-        x1="100"
-        y1="112"
-        x2="100"
-        y2="58"
-        stroke="#2b2620"
-        strokeWidth="4.5"
-        strokeLinecap="round"
-        transform={`rotate(${horas * 30} 100 100)`}
-      />
-      <line
-        x1="100"
-        y1="114"
-        x2="100"
-        y2="34"
-        stroke="#6b6357"
-        strokeWidth="3.2"
-        strokeLinecap="round"
-        transform={`rotate(${minutos * 6} 100 100)`}
-      />
-      <line
-        x1="100"
-        y1="118"
-        x2="100"
-        y2="26"
-        stroke="#d4af37"
-        strokeWidth="1.6"
-        strokeLinecap="round"
-        transform={`rotate(${segundos * 6} 100 100)`}
-      />
-      <circle cx="100" cy="100" r="5.5" fill="#d4af37" stroke="#fffdf6" strokeWidth="2" />
-    </svg>
+    </div>
   );
 }
 
 function TarjetaCuentasRegresivas() {
-  const [eventoId, setEventoId] = useState<(typeof EVENTOS_RELOJ)[number]["id"]>("boda");
-  const evento = EVENTOS_RELOJ.find((e) => e.id === eventoId) ?? EVENTOS_RELOJ[0];
+  const [eventoId, setEventoId] = useState<(typeof EVENTOS_CONTADOR)[number]["id"]>("boda");
+  const evento = EVENTOS_CONTADOR.find((e) => e.id === eventoId) ?? EVENTOS_CONTADOR[0];
   const ahora = useAhora(1000);
   const restante =
     ahora === null ? null : calcularCuentaRegresiva(ahora, evento.destino);
@@ -310,20 +246,20 @@ function TarjetaCuentasRegresivas() {
             Cuentas regresivas
           </h3>
           <p className="mt-1 text-[13px] leading-relaxed text-tinta-media">
-            Un reloj esférico que marca cada segundo y cuenta los días que
-            faltan.
+            Un contador numérico y tipográfico que marca cada segundo hasta el
+            gran día, igual que en las invitaciones reales.
           </p>
         </div>
       </header>
 
-      <RelojAnalogo />
+      <ContadorNumerico restante={restante} />
 
       <div
         className="flex flex-wrap justify-center gap-2"
         role="group"
         aria-label="Elegir evento del contador"
       >
-        {EVENTOS_RELOJ.map((ev) => (
+        {EVENTOS_CONTADOR.map((ev) => (
           <button
             key={ev.id}
             type="button"
@@ -340,22 +276,9 @@ function TarjetaCuentasRegresivas() {
         ))}
       </div>
 
-      <div className="rounded-2xl border border-dorado/25 bg-white/50 py-3.5 text-center">
-        {restante ? (
-          <p className="font-serif text-[21px] leading-tight text-tinta tabular-nums">
-            Faltan {restante.dias} d · {String(restante.horas).padStart(2, "0")} h ·{" "}
-            {String(restante.minutos).padStart(2, "0")} m ·{" "}
-            <span className="text-dorado-hondo">
-              {String(restante.segundos).padStart(2, "0")} s
-            </span>
-          </p>
-        ) : (
-          <p className="font-serif text-[21px] text-tinta">Faltan — d — h — m — s</p>
-        )}
-        <p className="mt-0.5 text-[10px] uppercase tracking-[0.28em] text-tinta-suave">
-          {evento.frase}
-        </p>
-      </div>
+      <p className="text-center text-[10px] uppercase tracking-[0.28em] text-tinta-suave">
+        {restante ? evento.frase : "Elegí un evento para ver el contador"}
+      </p>
     </article>
   );
 }
