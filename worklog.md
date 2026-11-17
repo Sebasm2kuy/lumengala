@@ -104,3 +104,23 @@ Registro de trabajo del repo aislado de diseño. La producción real
 - Calidad: lint 0 · typecheck 0 · 13/13 tests · build EXIT=0 con basePath.
   Ciclo git: rama 044d-editorial-y-ctas -> PR -> merge -> deploy Pages del
   repo de prueba.
+
+## 2026-11-17 · Iteración 044e — Contador numérico en la maqueta de cuentas regresivas
+
+- Se elimina el reloj analógico circular (RelojAnalogo) de la tarjeta 2
+  «Cuentas regresivas»: el formato de esfera con manecillas no corresponde al
+  producto real. Ahora la maqueta muestra el mismo contador que las
+  invitaciones entregadas: cuatro columnas numéricas y tipográficas (Días ·
+  Horas · Min · Seg, etiquetas idénticas a countdown.labels de producción)
+  con filetes dorados, dígitos serif tabulares y role="timer" con aria-label
+  hablado.
+- El selector Boda/XV se mantiene y la frase del evento pasa a pie de tarjeta;
+  el viejo resumen «Faltan X d · X h…» desaparece porque el contador ES el
+  protagonista.
+- Corrección de producto asociada (repo de producción Miluaistudio, PR aparte):
+  la pantalla de precarga de las demos /i/ejemplo-* deja de mostrar
+  porcentajes (se congelaban en 82% mientras cargaban los activos) y el texto
+  «Ejemplo Boda»; pasa a una bienvenida limpia con la tipografía de Lumen Gala
+  y un tope de tiempo que garantiza que la carga siempre termine.
+- Calidad: lint 0 · typecheck 0 · 13/13 tests · build EXIT=0 con basePath.
+  Ciclo git: rama 044e-contador-tipografico -> PR -> merge -> deploy Pages.
