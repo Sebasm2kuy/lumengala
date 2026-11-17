@@ -34,7 +34,7 @@ export default function Comparativa() {
   return (
     <section
       id="por-que-digital"
-      className="scroll-mt-24 py-20 lg:py-28"
+      className="scroll-mt-24 py-20 lg:py-32"
       aria-labelledby="titulo-comparativa"
     >
       <div className="mx-auto w-full max-w-6xl px-5 sm:px-8">
@@ -44,8 +44,8 @@ export default function Comparativa() {
             <div className="anillo-arco">
               <div className="arco relative aspect-[3/4] overflow-hidden border border-dorado/35 shadow-[0_40px_80px_-40px_rgba(43,38,32,0.45)]">
                 <Image
-                  src={rutaPublica("/img/camila.jpg")}
-                  alt="Ramo rosado en arco editorial de la colección Camila"
+                  src={rutaPublica("/img/editorial-celu.jpg")}
+                  alt="Mano sosteniendo un celular con una invitación digital Lumen Gala de tipografía dorada sobre fondo marfil"
                   fill
                   sizes="(min-width: 1024px) 420px, 90vw"
                   className="object-cover"
@@ -57,7 +57,7 @@ export default function Comparativa() {
               </div>
             </div>
             <p className="mt-6 text-center text-[10px] uppercase tracking-[0.3em] text-tinta-suave">
-              Colección Camila · XV años
+              Tu invitación, siempre en la mano · Lumen Gala
             </p>
           </Revelar>
 

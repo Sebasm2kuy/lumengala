@@ -3,13 +3,10 @@
 import { useEffect, useState } from "react";
 import { Sparkles } from "lucide-react";
 
-/* Canal real de contacto de Lumen Gala (el mismo WhatsApp del sitio en
-   producción); solo se enlaza, nunca se modifica producción. */
-const WHATSAPP =
-  "https://wa.me/59895239386?text=" +
-  encodeURIComponent(
-    "Hola Lumen Gala 💛 Quiero encargar mi invitación digital.",
-  );
+/* Canal real de encargo de Lumen Gala: el botón flotante deriva al
+   onboarding (/personalizar/ en producción, el flujo guiado); se enlaza,
+   nunca se modifica producción. */
+const ONBOARDING = "https://lumengala.site/personalizar/";
 
 /* Botón flotante "Encargar": fijo en la esquina inferior derecha, aparece
    con una transición suave cuando la página ya se desplazó más allá del
@@ -26,12 +23,12 @@ export default function BotonEncargar() {
 
   return (
     <a
-      href={WHATSAPP}
+      href={ONBOARDING}
       target="_blank"
       rel="noopener noreferrer"
       aria-hidden={!visible}
       tabIndex={visible ? 0 : -1}
-      aria-label="Encargar mi invitación (abre WhatsApp)"
+      aria-label="Encargar mi invitación (abre el flujo de personalización en lumengala.site)"
       /* Respeta el safe-area de iOS (barra home) para no quedar pegado
          ni cortado contra el borde inferior del celular. */
       className={`fixed right-5 z-50 bottom-[calc(1.25rem+env(safe-area-inset-bottom,0px))] transition-all duration-500 sm:right-7 sm:bottom-[calc(1.75rem+env(safe-area-inset-bottom,0px))] ${

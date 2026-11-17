@@ -19,7 +19,7 @@ export default function Colecciones() {
   return (
     <section
       id="colecciones"
-      className="scroll-mt-24 bg-marfil-hondo/60 py-20 lg:py-28"
+      className="scroll-mt-24 bg-marfil-hondo/60 py-20 lg:py-32"
       aria-labelledby="titulo-colecciones"
     >
       <div className="mx-auto w-full max-w-6xl px-5 sm:px-8">
@@ -76,7 +76,7 @@ export default function Colecciones() {
         {/* Grid de obras */}
         <div
           key={filtro}
-          className="mt-12 grid gap-x-8 gap-y-14 sm:grid-cols-2 lg:mt-16 lg:grid-cols-3"
+          className="mt-12 grid gap-x-8 gap-y-14 sm:grid-cols-2 lg:mt-16 lg:grid-cols-3 lg:gap-y-16"
         >
           {obras.map((obra, indice) => (
             <figure
@@ -84,29 +84,35 @@ export default function Colecciones() {
               className="grupo-obra obra-entrante group"
               style={{ animationDelay: `${indice * 70}ms` }}
             >
-              <div className="marco-obra">
-                <div className="relative aspect-[4/5] overflow-hidden rounded-[3px]">
-                  <Image
-                    src={rutaPublica(`/img/${obra.imagen}.jpg`)}
-                    alt={`Obra ${obra.nombre} — ${obra.descripcion}`}
-                    fill
-                    sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-                    className="foto-obra object-cover"
-                  />
-                  {/* velo + botón al hover (o al enfocar con teclado) */}
-                  <div className="velo-obra absolute inset-0 flex items-center justify-center bg-gradient-to-t from-[#2b2620]/72 via-[#2b2620]/10 to-transparent">
-                    <a
-                      href={obra.urlVivo}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="boton-obra brillo inline-flex items-center gap-2 rounded-full bg-gradient-to-b from-[#e6c96f] to-[#c39b2a] px-5 py-2.5 text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[#241d10] shadow-[0_16px_34px_-12px_rgba(212,175,55,0.9)]"
-                    >
-                      <Eye className="h-4 w-4" aria-hidden="true" />
-                      Ver invitación en vivo
-                    </a>
+              {/* Toda la obra es un enlace: un click en cualquier parte de
+                  la tarjeta abre la invitación en vivo (el botón queda como
+                  etiqueta visual del mismo enlace). El hover y el foco siguen
+                  viviendo en .grupo-obra (veo globals.css). */}
+              <a
+                href={obra.urlVivo}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`Ver la invitación ${obra.nombre} en vivo (abre en una pestaña nueva)`}
+              >
+                <div className="marco-obra">
+                  <div className="relative aspect-[4/5] overflow-hidden rounded-[3px]">
+                    <Image
+                      src={rutaPublica(`/img/${obra.imagen}.jpg`)}
+                      alt={`Obra ${obra.nombre} — ${obra.descripcion}`}
+                      fill
+                      sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                      className="foto-obra object-cover"
+                    />
+                    {/* velo + etiqueta al hover (o al enfocar con teclado) */}
+                    <div className="velo-obra absolute inset-0 flex items-center justify-center bg-gradient-to-t from-[#2b2620]/72 via-[#2b2620]/10 to-transparent">
+                      <span className="boton-obra brillo inline-flex items-center gap-2 rounded-full bg-gradient-to-b from-[#e6c96f] to-[#c39b2a] px-5 py-2.5 text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[#241d10] shadow-[0_16px_34px_-12px_rgba(212,175,55,0.9)]">
+                        <Eye className="h-4 w-4" aria-hidden="true" />
+                        Ver invitación en vivo
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </div>
+              </a>
               <figcaption className="mt-4 text-center">
                 <p className="font-serif text-[22px] italic leading-tight text-tinta">
                   {obra.nombre}
@@ -123,7 +129,7 @@ export default function Colecciones() {
         </div>
 
         <p className="mt-12 text-center text-[12px] leading-relaxed text-tinta-suave">
-          Cada botón abre una invitación de demostración publicada en
+          Cada obra abre una invitación de demostración publicada en
           lumengala.site — este repositorio de prueba solo la enlaza.
         </p>
       </div>
