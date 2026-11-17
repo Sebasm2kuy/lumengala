@@ -565,7 +565,7 @@ export default function Experiencia() {
   return (
     <section
       id="experiencia"
-      className="relative scroll-mt-24 overflow-hidden py-20 lg:py-28"
+      className="relative scroll-mt-24 overflow-hidden py-20 lg:py-32"
       aria-labelledby="titulo-experiencia"
     >
       <div
@@ -590,7 +590,7 @@ export default function Experiencia() {
           </p>
         </Revelar>
 
-        <div className="mt-12 grid gap-6 md:grid-cols-2 lg:mt-16 lg:gap-8">
+        <div className="mt-12 grid gap-6 md:grid-cols-2 lg:mt-16 lg:gap-10">
           <Revelar retraso={0}>
             <TarjetaMusicaDiseno />
           </Revelar>

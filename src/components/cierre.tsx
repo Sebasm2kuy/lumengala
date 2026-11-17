@@ -1,18 +1,22 @@
 import Image from "next/image";
-import { Sparkles, Video } from "lucide-react";
+import { MessageCircle, Sparkles } from "lucide-react";
 import Revelar from "@/components/revelar";
 import { rutaPublica } from "@/lib/base-ruta";
 
-/* Canales reales de contacto de Lumen Gala Studio (mismos que producción). */
+/* Canales reales de contacto de Lumen Gala Studio (mismos que producción).
+   El botón principal deriva al onboarding (/personalizar/, el flujo guiado
+   de encargo); WhatsApp y el correo directo del estudio quedan como
+   canales de consulta. */
+const ONBOARDING = "https://lumengala.site/personalizar/";
 const WHATSAPP =
   "https://wa.me/59895239386?text=" +
   encodeURIComponent(
     "Hola Lumen Gala 💛 Quiero encargar mi invitación digital.",
   );
-const MAIL_VIDEOLLAMADA =
-  "mailto:lumengala.studio@gmail.com" +
+const MAIL_DIRECTO =
+  "mailto:sebacabrera1982@gmail.com" +
   "?subject=" +
-  encodeURIComponent("Quiero agendar una videollamada · Lumen Gala");
+  encodeURIComponent("Quiero encargar mi invitación · Lumen Gala");
 
 export default function Cierre() {
   return (
@@ -60,7 +64,7 @@ export default function Cierre() {
 
             <div className="mt-9 flex flex-col items-center justify-center gap-4 sm:flex-row">
               <a
-                href={WHATSAPP}
+                href={ONBOARDING}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="brillo inline-flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-b from-[#e6c96f] to-[#c39b2a] px-8 py-4 text-[12.5px] font-semibold uppercase tracking-[0.2em] text-[#241d10] shadow-[0_22px_46px_-16px_rgba(212,175,55,0.85)] transition-transform hover:scale-[1.03] sm:w-auto"
@@ -69,13 +73,25 @@ export default function Cierre() {
                 Encargar mi proyecto
               </a>
               <a
-                href={MAIL_VIDEOLLAMADA}
+                href={WHATSAPP}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-tinta/15 bg-white/60 px-8 py-4 text-[12.5px] font-semibold uppercase tracking-[0.2em] text-tinta backdrop-blur transition-colors hover:border-dorado hover:text-dorado-hondo sm:w-auto"
               >
-                <Video className="h-4 w-4" aria-hidden="true" />
-                Agendar videollamada
+                <MessageCircle className="h-4 w-4" aria-hidden="true" />
+                Consultar por WhatsApp
               </a>
             </div>
+
+            <p className="mt-6 text-[12px] leading-relaxed text-tinta-media">
+              ¿Preferís escribir?{" "}
+              <a
+                href={MAIL_DIRECTO}
+                className="font-medium text-dorado-hondo underline decoration-dorado/50 underline-offset-4 transition-colors hover:text-tinta"
+              >
+                sebacabrera1982@gmail.com
+              </a>
+            </p>
 
             <p className="mt-7 text-[11px] uppercase tracking-[0.22em] text-tinta-suave">
               Respuesta en menos de 24 h · Montevideo, Uruguay

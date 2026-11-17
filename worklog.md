@@ -73,3 +73,34 @@ Registro de trabajo del repo aislado de diseño. La producción real
 - Calidad: lint 0 · typecheck 0 · 13/13 tests · build EXIT=0 con basePath.
   Ciclo git: rama fix/044c-responsive-movil -> PR -> escaneo anti-fugas ->
   merge -> verificación del deploy del repo de prueba.
+
+## 2026-11-17 · Iteración 044d — Retrato editorial del arco, obras clicables y CTAs al embudo real
+
+- Arco «Por qué digital»: se reemplaza el ramo (camila.jpg) por un retrato
+  editorial generado (editorial-celu.jpg, 864×1152): mano con manicura
+  sosteniendo el celular con la invitación de ornamento botánico dorado sobre
+  marfil. La primera generación traía el texto «wedding Inviation» mal escrito
+  en la pantalla — se regeneró SIN texto (solo ornamento) para eliminar de
+  raíz el riesgo de typos del modelo. Leyenda: «Tu invitación, siempre en la
+  mano · Lumen Gala».
+- Museo: cada obra ahora es un enlace completo (el <a> envuelve el marco y la
+  etiqueta «Ver invitación en vivo» pasa a span para no anidar elementos
+  interactivos); el hover y el foco siguen viviendo en .grupo-obra, y las 6
+  tarjetas apuntan a las demos vivas verificadas (HTTP 200):
+  /i/ejemplo-boda/ y /i/ejemplo-quince/ de lumengala.site.
+- Embudo de encargo: los botones principales «Encargar mi proyecto» (héroe y
+  cierre) y el flotante «Encargar» derivan al onboarding real
+  lumengala.site/personalizar/; WhatsApp queda como canal de consulta, el
+  cierre suma el correo directo sebacabrera1982@gmail.com y el pie enlaza el
+  panel de cliente (lumengala.site/acceso/).
+- Espaciado de lujo en pantallas grandes: experiencia, museo y comparativa
+  pasan de lg:py-28 a lg:py-32, grid de tarjetas a lg:gap-10 y fila del museo
+  a lg:gap-y-16.
+- Verificación en navegador (1440×900 y 390×844, export servido bajo
+  /lumengala/): sin overflow horizontal, botón flotante visible tras el héroe
+  y apuntando a /personalizar/, los 6 enlaces de obras correctos, arco y
+  galería con imágenes cargadas. Capturas revisadas: héroe, arco (v2), museo,
+  cierre y móvil.
+- Calidad: lint 0 · typecheck 0 · 13/13 tests · build EXIT=0 con basePath.
+  Ciclo git: rama 044d-editorial-y-ctas -> PR -> merge -> deploy Pages del
+  repo de prueba.

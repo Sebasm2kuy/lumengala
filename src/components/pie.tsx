@@ -50,6 +50,14 @@ export default function Pie() {
             <Mail className="h-3.5 w-3.5" aria-hidden="true" />
             lumengala.studio@gmail.com
           </a>
+          <a
+            href="https://lumengala.site/acceso/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-tinta-media transition-colors hover:text-dorado-hondo"
+          >
+            ¿Ya tenés tu invitación? Entrá a tu panel
+          </a>
           <p className="max-w-[320px] text-[10.5px] leading-relaxed text-tinta-suave">
             Propuesta de diseño en repositorio de prueba — no afecta a
             lumengala.site.

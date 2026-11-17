@@ -16,7 +16,10 @@ import type { Restante } from "@/lib/cuenta-regresiva";
 import { useAhora } from "@/hooks/use-ahora";
 import Revelar from "@/components/revelar";
 
-/* Canal real de contacto de Lumen Gala (WhatsApp del sitio en producción). */
+/* Canales reales de contacto de Lumen Gala (producción): el botón principal
+   deriva al onboarding (/personalizar/, el flujo guiado de encargo) y
+   WhatsApp queda como canal directo de consulta. */
+const ONBOARDING = "https://lumengala.site/personalizar/";
 const WHATSAPP =
   "https://wa.me/59895239386?text=" +
   encodeURIComponent(
@@ -370,7 +373,7 @@ export default function Hero() {
             <Revelar retraso={360}>
               <div className="mt-9 flex flex-col items-center gap-4 sm:flex-row sm:justify-center lg:justify-start">
                 <a
-                  href={WHATSAPP}
+                  href={ONBOARDING}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="brillo inline-flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-b from-[#e6c96f] to-[#c39b2a] px-8 py-4 text-[12.5px] font-semibold uppercase tracking-[0.2em] text-[#241d10] shadow-[0_20px_44px_-16px_rgba(212,175,55,0.8)] transition-transform hover:scale-[1.03] sm:w-auto"
