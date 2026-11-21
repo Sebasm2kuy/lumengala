@@ -34,6 +34,27 @@ Los botones "Ver invitación en vivo" enlazan a las dos invitaciones de
 demostración **ya publicadas en producción** (`/i/ejemplo-boda/` y
 `/i/ejemplo-quince/`); este repositorio solo las enlaza, nunca las modifica.
 
+## Prototipo Edición Crónica (044f)
+
+Primera arquitectura de invitación realmente distinta de las plantillas
+clásicas de lista vertical: una **historia narrativa por capítulos**
+(Prólogo → I. Anuncio con cuenta regresiva tipográfica → II. Lugar y fecha →
+III. Galería → IV. Detalles / dress code → V. RSVP), cada uno con su propio
+ritmo, jerarquía y respiro visual en celular y escritorio.
+
+- Archivo autocontenido en `public/edicion-cronica.html` (HTML+CSS+JS
+  inline, sin build): se sirve en `/lumengala/edicion-cronica.html` y queda
+  enlazado desde la nota de cierre de la galería de colecciones.
+- Apertura limpia (cero porcentajes en carga, contenido visible sin JS),
+  cuenta regresiva en vivo sin reloj analógico, capítulos claros/oscuros
+  alternados, índice lateral de romanos en escritorio,
+  `prefers-reduced-motion` respetado, sin overflow a 375 px.
+- Identidad editorial propia a propósito (papel marfil + tinta + terracota,
+  Fraunces + Inter): es un estudio de arquitectura, no de skin de la landing.
+- Contenido de muestra (nombres, venue, imágenes de referencia) y RSVP que
+  confirma en pantalla con `localStorage`: pendientes de evento real y
+  backend antes de producción. `noindex` por coherencia con este repo.
+
 ## Stack
 
 Mismo stack que producción, para que el diseño sea portable después:

@@ -132,6 +132,24 @@ export default function Colecciones() {
           Cada obra abre una invitación de demostración publicada en
           lumengala.site — este repositorio de prueba solo la enlaza.
         </p>
+
+        {/* Prototipo de arquitectura (iteración 044f): la primera invitación
+            con estructura distinta de las plantillas clásicas — narrativa por
+            capítulos. Vive como archivo autocontenido en public/ y se prueba
+            aparte de las demos de producción. */}
+        <p className="mt-6 text-center text-[12px] leading-relaxed text-tinta-suave">
+          ¿Cómo se siente la próxima arquitectura? Probá el prototipo{" "}
+          <a
+            href={rutaPublica("/edicion-cronica.html")}
+            className="font-medium text-dorado-hondo underline decoration-dorado/50 underline-offset-4 transition-colors hover:text-tinta"
+            aria-label="Abrir el prototipo Edición Crónica: invitación narrativa por capítulos"
+          >
+            Edición Crónica
+          </a>{" "}
+          — una invitación narrativa por capítulos (Prólogo → Anuncio → Lugar →
+          Galería → Detalles → RSVP), la primera estructura que se aparta de la
+          lista vertical clásica.
+        </p>
       </div>
     </section>
   );
