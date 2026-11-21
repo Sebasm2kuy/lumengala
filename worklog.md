@@ -371,3 +371,52 @@ Registro de trabajo del repo aislado de diseño. La producción real
   pliegue en el canto móvil, sin texto en espejo.
 - Ciclo git: rama 045d-flip-real → PR #13 → escaneo anti-fugas → merge →
   deploy Pages → verificación en vivo.
+
+## 2026-11-21 · Iteración 046a — Arquitectura 3: «Escena XV · Explorable»
+
+- **Pedido:** tercera arquitectura insignia — invitación por
+  descubrimiento: escena con profundidad 3D real (parallax reactivo a
+  táctil y giroscopio) y 4-5 objetos interactivos que revelan los datos
+  de la fiesta, integrada a la galería con su propia miniatura.
+- **Escena (public/escena-xv.html):** composición nocturna de gala en
+  seis capas SVG/CSS (cielo con luna y 44 estrellas generadas,
+  resplandor del horizonte, bosque lejano, arco con guirnalda en doble
+  catenaria + farol + perchero, mesa con candelabro de tres luces,
+  atril de firmas, follaje enmarcando, 24 bokeh dorado/rosa) sobre la
+  identidad Lumen Gala (tinta nocturna + rosa + dorado, Playfair +
+  Archivo). Sin fotos de vestido de XV; todo dibujado.
+- **Motor 3D:** .escena con perspective:1200px; .escenario
+  preserve-3d que rota (rotateY ±2.6°, rotateX ±1.9°); cada capa con
+  translateZ(-620…+130px) y compensación de escala ((1200-z)/1200) más
+  desplazamiento por profundidad. Entradas: hover del mouse,
+  arrastre táctil con captura de puntero (la vista queda donde se
+  deja), giroscopio opcional (DeviceOrientation + permiso iOS vía
+  botón «Inclinar», calibrado en la primera lectura) y flechas del
+  teclado; rAF con lerp 0.075 hacia el objetivo combinado y clamp
+  [-1,1]. prefers-reduced-motion: sin bucle ni partículas animadas.
+- **Descubrimiento (5 focos):** fecha (cuenta regresiva tipográfica
+  sin relojes), lugar (mapa + Google Calendar), código de vestimenta
+  (coctel de día · rosa pálido & champán · tarde fresca), carta de
+  Lucía y atril RSVP (localStorage + WhatsApp, prefill al reabrir).
+  Contador 0/5 aria-live, focos con pulso→rosa fijo, guía que se
+  retira al primer hallazgo, línea de celebración al completar, e
+  índice rápido con estados. Paneles editoriales sobre papel (bottom
+  sheet en móvil), ESC/fondo/cierre, foco devuelto al disparador.
+- **Galería:** tercera tarjeta en la vista [XV Años]
+  (colecciones.tsx) con miniatura compuesta (mini-escena SVG: cielo,
+  arco, guirnalda, velas, destellos) y chips «Escena 3D»/«05
+  descubrimientos» — sin fotos inventadas.
+- **Calidad:** lint 0 · typecheck 0 · 13/13 tests · build EXIT=0 ·
+  HTML válido. E2E: descubrimiento completo 0→5 por focos e índice,
+  ESC, parallax por mouse (rotateY + capas), arrastre táctil, flechas,
+  RSVP con confirmación y prefill, consola limpia; fits y sin scroll.
+- **Visual (VLM, 4 rondas):** de FIX a **GOOD** — ronda 1: sombras y
+  definición; ronda 2: etiquetas/píldoras; ronda 3 (hallazgo técnico):
+  reglas CSS de desplazamiento de etiqueta quedaban ANTES de la base
+  de igual especificidad y no aplicaban — se resolvió con
+  `button.foco--rsvp` (orden-independiente) + subtítulo de marca dual,
+  píldoras con flex-shrink:0, focos de mesa elevados y banda de
+  respaldo tras el pie; ronda 4: GOOD sin issues (móvil, escritorio y
+  tarjeta de galería).
+- Ciclo git: rama 046a-escena-3d → PR #14 → anti-fugas → merge →
+  deploy Pages → verificación en vivo.
