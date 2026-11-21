@@ -212,3 +212,50 @@ Registro de trabajo del repo aislado de diseño. La producción real
   revisión visual VLM GOOD en móvil y escritorio.
 - Ciclo git: rama 045a-lookbook-xv -> PR #9 -> escaneo anti-fugas -> merge
   -> deploy Pages -> verificación en vivo.
+
+## 2026-11-21 · Iteración 045b — «Revista XV · Lookbook»: de scroll vertical a revista paginada
+
+- Rediseño completo de la segunda arquitectura: deja de ser una página de
+  scroll vertical continuo y pasa a ser una **revista interactiva de 6
+  páginas a pantalla completa (100dvh con fallback 100vh) que se lee
+  pasando hojas de derecha a izquierda**.
+- Navegación por cuatro vías: swipe táctil con seguimiento de dedo
+  (PointerEvents, detección de eje dominante, umbral 18% del ancho o 56px,
+  con snap y supresión del click fantasma), clic en los bordes laterales
+  (solo zonas libres de contenido: z-index por debajo de page-inner) y en
+  los controles del paginador, flechas del teclado (←/→ avanzar/retroceder,
+  Inicio/Fin saltos, handler defensivo contra targets sin closest) y rueda
+  horizontal de trackpad con acumulador y debounce.
+- Transición con sensación de pliego: track con transform translateX y
+  easing cubic-bezier(.77,0,.18,1), sombra sutil de doblez en el canto de
+  cada página (box-shadow inset), páginas inactivas levemente bajadas
+  (overlay rgba) con parallax del contenido (2.4%), paginador visible
+  «01 / 06» en barra fija con blur (prev/next deshabilitados en extremos).
+  prefers-reduced-motion: paso instantáneo, sin revelados.
+- Estructura editorial por páginas: 1 portada (foto full-bleed + Edición
+  Nº 15 + dateline) · 2 editorial de apertura + cuenta regresiva
+  tipográfica · 3 coordenadas (horarios, lugar, mapa, calendario) · 4
+  pliego de lookbook (tres encuadres escalonados) · 5 código de vestimenta
+  y detalles (panel de specs) · 6 contraportada con RSVP. Revelados por
+  página activa con stagger (re-animan al reentrar), páginas inactivas con
+  inert para el foco de teclado.
+- Fotos: 8 imágenes distintas, una por página y sin repeticiones (045a
+  repetía dos): portada hero, grupo en parque, parque otoñal, tres
+  encuadres (esquina/parque/avenida), look de tarde y la tarde urbana.
+  Todas de exteriores casuales, sin vestidos de gala; 8/8 URLs 200.
+- Degradación sin JS: páginas apiladas verticalmente legibles (gating
+  html.js para el modo revista), paginador/bordes/pista ocultos sin JS.
+- Galería: miniatura actualizada a la nueva edición — chip «06 páginas»,
+  aria-label «revista interactiva paginada», descripción nueva; la portada
+  de la tarjeta coincide con la página 1 real. Contador de obras intacto.
+- Fixes durante E2E: página 5 excedía 100dvh en 375×667 por 13px (foto
+  fit-h 27dvh→24dvh y specs compactados), handler de teclado defensivo,
+  y bug del propio script de capturas (translateX sin calc()).
+- Calidad: lint 0 · typecheck 0 · 13/13 tests · build EXIT=0 con basePath.
+  E2E agent-browser: 375×667 y 1440×900 con las 6 páginas sin overflow
+  interno, swipe/botones/teclado/bordes/drag de mouse, tope 06 sin
+  overscroll, hint oculto tras navegar, RSVP completo + prefill al
+  recargar, countdown 112 días, 8/8 imágenes; revisión visual VLM de las
+  6 páginas en móvil y escritorio: GOOD en los 4 strips.
+- Ciclo git: rama 045b-revista-paginada -> PR #10 -> escaneo anti-fugas ->
+  merge -> deploy Pages -> verificación en vivo.
