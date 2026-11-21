@@ -68,7 +68,11 @@ export default function Colecciones() {
               className="ml-1 hidden text-[11px] uppercase tracking-[0.2em] text-tinta-suave sm:inline"
               aria-live="polite"
             >
-              {obras.length} {obras.length === 1 ? "obra" : "obras"}
+              {obras.length}{" "}
+              {obras.length + (filtro === "todas" ? 0 : 1) === 1
+                ? "obra"
+                : "obras"}
+              {filtro !== "todas" && " + prototipo"}
             </span>
           </div>
         </Revelar>
@@ -234,6 +238,102 @@ export default function Colecciones() {
                 <p className="mx-auto mt-1.5 max-w-[260px] text-[12px] leading-relaxed text-tinta-media">
                   Nuestra primera arquitectura narrativa por capítulos,
                   distinta de la lista vertical clásica.
+                </p>
+              </figcaption>
+            </figure>
+          )}
+
+          {/* Arquitectura 2 (045a): Revista / Lookbook Asimétrico, para XV.
+              Misma lógica que Edición Crónica: "obra" extra SOLO en la vista
+              [XV Años], fuera del catálogo COLECCIONES (tests del museo).
+              Miniatura de portada de revista con la foto real de la sesión
+              (imagen remota; se usa <img> y no next/image para no tocar la
+              config de dominios del repo de pruebas) + masthead "Lucía" +
+              barra inferior con nº de edición y acento rosa editorial. */}
+          {filtro === "quince" && (
+            <figure
+              className="grupo-obra obra-entrante group"
+              style={{ animationDelay: `${obras.length * 70}ms` }}
+            >
+              <a
+                href={rutaPublica("/lookbook-xv.html")}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Abrir el prototipo Revista XV · Lookbook: invitación editorial asimétrica (abre en una pestaña nueva)"
+              >
+                <div className="marco-obra">
+                  <div className="relative aspect-[4/5] overflow-hidden rounded-[3px] bg-[#15120E]">
+                    {/* Portada de revista: foto de la sesión a página
+                        completa, filete superior "Edición Nº 15", masthead
+                        serif gigante "Lucía" y pie con dateline. El acento
+                        rosa editorial (#C25E7A) es la identidad de la pieza.
+                        Imagen remota con <img> (no next/image) para no
+                        tocar la config de dominios del repo de pruebas. */}
+                    <img
+                      src="https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/1746547fe9b9.png"
+                      alt="Lucía al aire libre en la ciudad, sesión casual del lookbook"
+                      className="foto-obra absolute inset-0 h-full w-full object-cover"
+                      loading="lazy"
+                    />
+                    {/* degradado para legibilidad del texto sobre la foto
+                        (refuerzo inferior: el subtítulo pisa la zona
+                        luminosa de la escena del café) */}
+                    <div
+                      aria-hidden="true"
+                      className="absolute inset-0 bg-gradient-to-b from-[#15120E]/80 via-[#15120E]/15 to-[#15120E]/88"
+                    />
+                    <div className="absolute inset-0 flex flex-col justify-between p-5 text-left sm:p-6">
+                      <div>
+                        <div className="flex items-baseline justify-between rounded-[2px] bg-[#15120E]/55 px-2 py-1 backdrop-blur-[2px] text-[7.5px] font-semibold uppercase tracking-[0.28em] text-[#F2EDE4]/95">
+                          <span>Prototipo</span>
+                          <span className="text-[#E3A2B8]">Edición Nº 15</span>
+                        </div>
+                        <div
+                          className="mt-2 h-px w-full bg-[#F2EDE4]/35"
+                          aria-hidden="true"
+                        />
+                        <p className="mt-3 font-serif text-[44px] font-black leading-[0.9] text-[#F2EDE4] drop-shadow-[0_2px_14px_rgba(21,18,14,0.85)] sm:text-[52px]">
+                          Lucía
+                        </p>
+                        <p className="mt-1.5 rounded-[2px] bg-[#15120E]/55 px-2 py-1 font-serif text-[11px] italic text-[#F2EDE4] backdrop-blur-[2px] sm:text-[12px]">
+                          quince años, editados como una revista
+                        </p>
+                      </div>
+                      <div>
+                        <div
+                          className="mb-2.5 h-px w-full bg-[#F2EDE4]/35"
+                          aria-hidden="true"
+                        />
+                        <div className="flex items-baseline justify-between text-[7.5px] uppercase tracking-[0.22em] text-[#F2EDE4]/75">
+                          <span>Marzo 2027</span>
+                          <span className="text-[#E3A2B8]">Lookbook</span>
+                        </div>
+                        <p className="mt-1.5 text-[8px] uppercase tracking-[0.24em] text-[#F2EDE4]/60">
+                          Guadalajara · Sábado 13
+                        </p>
+                      </div>
+                    </div>
+                    {/* velo + etiqueta al hover (o al enfocar con teclado),
+                        igual que las obras */}
+                    <div className="velo-obra absolute inset-0 flex items-center justify-center bg-gradient-to-t from-[#2b2620]/72 via-[#2b2620]/10 to-transparent">
+                      <span className="boton-obra brillo inline-flex items-center gap-2 rounded-full bg-gradient-to-b from-[#e6c96f] to-[#c39b2a] px-5 py-2.5 text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[#241d10] shadow-[0_16px_34px_-12px_rgba(212,175,55,0.9)]">
+                        <Eye className="h-4 w-4" aria-hidden="true" />
+                        Abrir el prototipo
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </a>
+              <figcaption className="mt-4 text-center">
+                <p className="font-serif text-[22px] italic leading-tight text-tinta">
+                  Revista XV · Lookbook
+                </p>
+                <p className="mt-1 text-[9.5px] uppercase tracking-[0.28em] text-tinta-suave">
+                  Prototipo · no es una colección
+                </p>
+                <p className="mx-auto mt-1.5 max-w-[260px] text-[12px] leading-relaxed text-tinta-media">
+                  Segunda arquitectura: spreads asimétricos de revista con
+                  sesión de exteriores para la fiesta.
                 </p>
               </figcaption>
             </figure>

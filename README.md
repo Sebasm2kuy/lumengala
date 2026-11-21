@@ -59,6 +59,35 @@ ritmo, jerarquía y respiro visual en celular y escritorio.
   confirma en pantalla con `localStorage`: pendientes de evento real y
   backend antes de producción. `noindex` por coherencia con este repo.
 
+## Prototipo Revista XV · Lookbook (045a)
+
+Segunda arquitectura distinta: una invitación de **15 años editada como una
+revista / lookbook asimétrico** — spreads con encuadres y proporciones
+variadas (vertical 3:4.4, horizontal 16:10, tira de tres marcos escalonados,
+flipa sangrada), bloques de texto desplazados y asimetría intencional en
+lugar de bloques simétricos repetidos.
+
+- Archivo autocontenido en `public/lookbook-xv.html` (HTML+CSS+JS inline,
+  sin build): se sirve en `/lumengala/lookbook-xv.html` y su acceso vive en
+  la **vista [XV Años] de la galería de colecciones** como tarjeta
+  prototipo con portada de revista (foto de la sesión a página completa,
+  masthead serif gigante «Lucía», tira de edición y dateline; fuera del
+  catálogo de colecciones).
+- Enfoque XV con fotos de exteriores solamente (ciudad, parque, calles):
+  sin vestidos de gala para preservar la sorpresa de la noche. 23
+  candidatas buscadas y re-hosteadas, filtradas con VLM (descartes por
+  marca de agua, collages y vestimenta no casual); 7 fotos finales.
+- Funciones: cuenta regresiva tipográfica (sin reloj analógico), mapa y
+  calendario (Google), dress code en panel de specs, RSVP con
+  confirmación en pantalla y `localStorage` (clave `rsvp-lookbook-xv`).
+- Identidad propia a propósito (papel frío + tinta + rosa editorial
+  #C25E7A, Playfair Display + Archivo): es un estudio de arquitectura
+  distinta, no un skin de la landing ni de Edición Crónica.
+- Contenido de muestra (Lucía, Jardines de la Quinta, Guadalajara,
+  sábado 13.03.2027 — fecha real de calendario): a reemplazar por el
+  evento real y el shoot antes de producción. `noindex` por coherencia
+  con este repo.
+
 ## Stack
 
 Mismo stack que producción, para que el diseño sea portable después:
