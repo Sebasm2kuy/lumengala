@@ -137,12 +137,17 @@ Registro de trabajo del repo aislado de diseño. La producción real
   https://sebasm2kuy.github.io/lumengala/edicion-cronica.html. La landing no
   cambia de estructura. Ubicación del acceso (ajuste de 044f): vive en la
   vista [Bodas] de la galería de colecciones como tarjeta prototipo con
-  portada tipográfica propia (papel/tinta/terracota, índice de capítulos en
-  romanos, hover «Abrir el prototipo» reutilizando marco-obra/velo-obra),
-  construida con `rutaPublica()` (respeta basePath). El enlace original del
-  pie de galería se retiró. La tarjeta está FUERA del catálogo COLECCIONES
-  a propósito: los tests fijan 6 colecciones que enlazan demos de
-  producción, y el prototipo no es una colección.
+  portada de «primera plana» (feedback del estudio: el índice apilado sobre
+  crema se veía plano). Composición editorial con la identidad de la pieza:
+  banda masthead de tinta con el título en crema y filete terracota,
+  dateline del evento, capitular terracota con la apertura real del
+  capítulo I citada de la pieza, marca de agua «01» y corrida de capítulos
+  I–V + RSVP al pie. Sin relojes ni índices apilados; mismo marco, velo y
+  botón «Abrir el prototipo» del museo, con `rutaPublica()` (respeta
+  basePath). El enlace original del pie de galería se retiró. La tarjeta
+  está FUERA del catálogo COLECCIONES a propósito: los tests fijan 6
+  colecciones que enlazan demos de producción, y el prototipo no es una
+  colección.
 - Lineamientos cumplidos: apertura limpia (cero porcentajes en carga, velo
   de papel + entrada escalonada, contenido visible sin JS gracias al gating
   `html.js` de los revelados); cuenta regresiva tipográfica en vivo sin
