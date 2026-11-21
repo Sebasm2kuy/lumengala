@@ -132,8 +132,10 @@ export default function Colecciones() {
               Está FUERA del catálogo COLECCIONES a propósito — el museo
               publica 6 colecciones que enlazan demos de producción (los
               tests lo fijan); el prototipo vive en public/ de este repo de
-              prueba y no es una colección. Portada tipográfica con la
-              identidad editorial del prototipo (papel, tinta, terracota). */}
+              prueba y no es una colección. Portada de "primera plana" con la
+              identidad editorial de la pieza (tinta, papel, terracota):
+              masthead oscuro + dateline + capitular con la apertura real +
+              corrida de capítulos. Sin fotos ni relojes. */}
           {filtro === "boda" && (
             <figure
               className="grupo-obra obra-entrante group"
@@ -146,34 +148,70 @@ export default function Colecciones() {
                 aria-label="Abrir el prototipo Edición Crónica: invitación narrativa por capítulos (abre en una pestaña nueva)"
               >
                 <div className="marco-obra">
-                  <div className="relative aspect-[4/5] overflow-hidden rounded-[3px] bg-[#F7F2E9]">
-                    {/* portada tipográfica, sin foto: el prototipo aún no
-                        tiene shoot propio */}
-                    <div className="absolute inset-0 flex flex-col justify-between p-5 text-left sm:p-6">
-                      <p className="text-[8.5px] font-semibold uppercase tracking-[0.3em] text-[#A4502A]">
-                        Prototipo · Próxima arquitectura
-                      </p>
-                      <div>
-                        <p className="font-serif text-[27px] italic leading-tight text-[#211B13] sm:text-[31px]">
+                  <div className="relative aspect-[4/5] overflow-hidden rounded-[3px] bg-[#211B13]">
+                    {/* Portada de primera plana, sin foto (el prototipo aún
+                        no tiene shoot propio): banda masthead de tinta con el
+                        título, dateline del evento, capitular con la apertura
+                        real del capítulo I (texto citado de la pieza) y
+                        corrida de capítulos al pie. Marca de agua "01" como
+                        sello editorial. */}
+                    <div className="flex h-full flex-col">
+                      {/* masthead */}
+                      <div className="bg-[#211B13] px-5 pb-3.5 pt-3 text-center sm:px-6">
+                        <div className="flex items-baseline justify-between text-[7.5px] font-semibold uppercase tracking-[0.28em] text-[#F3EAD8]/75">
+                          <span>Prototipo</span>
+                          <span className="text-[#D08A5C]">Núm. 01</span>
+                        </div>
+                        <div
+                          className="mx-auto mt-1.5 h-px w-12 bg-[#A4502A]"
+                          aria-hidden="true"
+                        />
+                        <p className="mt-2 font-serif text-[27px] italic leading-none text-[#F3EAD8] sm:text-[31px]">
                           Edición Crónica
                         </p>
-                        <p className="mt-1 text-[9px] uppercase tracking-[0.24em] text-[#211B13]/60">
+                        <p className="mt-1.5 text-[7.5px] uppercase tracking-[0.32em] text-[#F3EAD8]/60">
                           La invitación, contada por capítulos
                         </p>
                       </div>
-                      <ol
-                        className="space-y-1.5 text-[9.5px] uppercase tracking-[0.18em] text-[#211B13]/70"
-                        aria-label="Capítulos del prototipo"
-                      >
-                        <li>I · El anuncio</li>
-                        <li>II · Lugar y fecha</li>
-                        <li>III · La galería</li>
-                        <li>IV · Los detalles</li>
-                        <li>V · RSVP</li>
-                      </ol>
-                      <p className="text-[8px] uppercase tracking-[0.3em] text-[#A4502A]/80">
-                        Núm. 01 · Valentina &amp; Mateo
-                      </p>
+                      {/* cuerpo de la primera plana */}
+                      <div className="relative flex flex-1 flex-col bg-gradient-to-b from-[#F9F4EA] to-[#EFE7D6] px-5 sm:px-6">
+                        <p className="border-b border-[#211B13]/15 pb-2 pt-3 text-center text-[7.5px] uppercase tracking-[0.24em] text-[#211B13]/75">
+                          Comala, Colima — Sábado 8 de mayo de 2027
+                        </p>
+                        <div className="flex flex-1 items-center">
+                          <p className="font-serif text-[11.5px] leading-[1.5] text-[#211B13]/85">
+                            <span
+                              aria-hidden="true"
+                              className="float-left mr-1.5 mt-[3px] font-serif text-[36px] leading-[0.8] text-[#A4502A]"
+                            >
+                              H
+                            </span>
+                            <span className="sr-only">H</span>
+                            ay historias que no empiezan con un golpe de
+                            suerte, sino con una pregunta que se queda
+                            rondando: ¿y si nos quedamos?
+                          </p>
+                        </div>
+                        <span
+                          aria-hidden="true"
+                          className="pointer-events-none absolute -bottom-5 right-2 font-serif text-[96px] italic leading-none text-[#A4502A]/10"
+                        >
+                          01
+                        </span>
+                        <p className="border-t border-[#211B13]/15 py-2.5 text-center text-[8.5px] uppercase tracking-[0.26em] text-[#211B13]/70">
+                          Capítulos{" "}
+                          <span className="font-medium text-[#A4502A]">I</span>{" "}
+                          ·{" "}
+                          <span className="font-medium text-[#A4502A]">II</span>{" "}
+                          ·{" "}
+                          <span className="font-medium text-[#A4502A]">III</span>{" "}
+                          ·{" "}
+                          <span className="font-medium text-[#A4502A]">IV</span>{" "}
+                          ·{" "}
+                          <span className="font-medium text-[#A4502A]">V</span> ·
+                          RSVP
+                        </p>
+                      </div>
                     </div>
                     {/* velo + etiqueta al hover (o al enfocar con teclado),
                         igual que las obras */}

@@ -65,14 +65,17 @@ de prueba para probarlo en el celular antes de llevarlo a producción.
   `/lumengala/edicion-cronica.html` (con basePath) y no toca el stack ni la
   estructura de la landing. El acceso, a pedido del estudio, está en la
   **vista [Bodas] de la galería de colecciones**: una tarjeta prototipo con
-  portada tipográfica propia (papel marfil, tinta, terracota; índice de
-  capítulos en romanos; hover «Abrir el prototipo») que reutiliza el
-  lenguaje del museo (`marco-obra`, `velo-obra`, `boton-obra`) y el helper
-  `rutaPublica()` para basePath. La tarjeta se renderiza en el componente,
-  **fuera del catálogo `COLECCIONES`**: los tests fijan 6 colecciones cuyas
-  URLs son siempre demos de producción, y el prototipo no es una colección
-  (no tiene shoot ni URL en lumengala.site). El enlace que estaba en la nota
-  de cierre de la galería se retiró para no duplicar accesos.
+  portada de «primera plana» — banda masthead de tinta con el título en
+  crema, dateline del evento, capitular terracota con la apertura real del
+  capítulo I (texto citado de la pieza), marca de agua «01» y corrida de
+  capítulos I–V + RSVP al pie — que reutiliza el lenguaje del museo
+  (`marco-obra`, `velo-obra`, `boton-obra`) y el helper `rutaPublica()`
+  para basePath. Sin relojes ni índices apilados. La tarjeta se renderiza
+  en el componente, **fuera del catálogo `COLECCIONES`**: los tests fijan 6
+  colecciones cuyas URLs son siempre demos de producción, y el prototipo no
+  es una colección (no tiene shoot ni URL en lumengala.site). El enlace que
+  estaba en la nota de cierre de la galería se retiró para no duplicar
+  accesos.
 - **Contenido parametrizado:** el bloque `CONFIG` al final del `<script>`
   concentra la fecha del evento (alimenta la cuenta regresiva) y el enlace
   de WhatsApp; el resto de los textos son muestra editorial (Valentina &

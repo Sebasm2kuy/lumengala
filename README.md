@@ -45,7 +45,9 @@ ritmo, jerarquía y respiro visual en celular y escritorio.
 - Archivo autocontenido en `public/edicion-cronica.html` (HTML+CSS+JS
   inline, sin build): se sirve en `/lumengala/edicion-cronica.html` y su
   acceso vive en la **vista [Bodas] de la galería de colecciones** como
-  tarjeta prototipo (portada tipográfica propia, fuera del catálogo de
+  tarjeta prototipo con portada de **primera plana** (masthead de tinta con
+  el título en crema, dateline del evento, capitular con la apertura real
+  del capítulo I y corrida de capítulos al pie; fuera del catálogo de
   colecciones).
 - Apertura limpia (cero porcentajes en carga, contenido visible sin JS),
   cuenta regresiva en vivo sin reloj analógico, capítulos claros/oscuros
