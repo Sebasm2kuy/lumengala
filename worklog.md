@@ -124,3 +124,40 @@ Registro de trabajo del repo aislado de diseño. La producción real
   y un tope de tiempo que garantiza que la carga siempre termine.
 - Calidad: lint 0 · typecheck 0 · 13/13 tests · build EXIT=0 con basePath.
   Ciclo git: rama 044e-contador-tipografico -> PR -> merge -> deploy Pages.
+
+## 2026-11-21 · Iteración 044f — Prototipo «Edición Crónica»: arquitectura narrativa por capítulos
+
+- Primera arquitectura de invitación realmente distinta de las plantillas
+  clásicas de lista vertical: una historia dividida en capítulos (Prólogo /
+  I. Anuncio / II. Lugar y fecha / III. Galería / IV. Detalles / V. RSVP),
+  cada uno con su propio ritmo, jerarquía y respiro visual en celular y
+  escritorio.
+- Integración mínima: archivo autocontenido `public/edicion-cronica.html`
+  (HTML+CSS+JS inline, sin build) que el export copia tal cual; sirve en
+  https://sebasm2kuy.github.io/lumengala/edicion-cronica.html y queda
+  enlazado desde la nota de cierre de la galería de colecciones con
+  `rutaPublica()` (respeta basePath). La landing no cambia de estructura.
+- Lineamientos cumplidos: apertura limpia (cero porcentajes en carga, velo
+  de papel + entrada escalonada, contenido visible sin JS gracias al gating
+  `html.js` de los revelados); cuenta regresiva tipográfica en vivo sin
+  reloj analógico (numerales serif tabulares D · H · M · S con role="timer");
+  identidad editorial propia — papel marfil #F7F2E9, tinta #211B13,
+  terracota #A4502A, Fraunces + Inter — elegida distinta a la dirección
+  dorada de la landing a propósito: es un estudio de arquitectura, no de
+  skin; capítulos claros/oscuros alternados para ritmo; índice lateral de
+  romanos en escritorio con capítulo activo; `prefers-reduced-motion`
+  respetado; `noindex` por coherencia con el repo de prueba.
+- RSVP de prototipo: valida nombre y asistencia, confirma en pantalla con
+  texto personalizado (singular/plural de acompañantes) y guarda en
+  localStorage (clave `rsvp-cronica`). La conexión a backend del evento
+  queda para la fase de producción.
+- Contenido de muestra (Valentina & Mateo, Hacienda La Loma, sábado
+  08.05.2027 — fecha real de calendario, 168 días de contador para probar)
+  e imágenes de referencia re-hosteadas: a reemplazar por el evento real y
+  el shoot antes de producción.
+- Calidad: lint 0 · typecheck 0 · 13/13 tests · build EXIT=0 con basePath.
+  E2E agent-browser: 375px y 1440px sin overflow horizontal, contador
+  tictaqueando, 7/7 imágenes cargadas, RSVP completo, índice lateral
+  marcando capítulo activo; export servido bajo /lumengala/ verificado.
+- Ciclo git: rama 044f-edicion-cronica -> PR -> escaneo anti-fugas -> merge
+  -> deploy Pages -> verificación del prototipo en vivo.
