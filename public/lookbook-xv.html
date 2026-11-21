@@ -12,13 +12,13 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;0,900;1,400;1,500&family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 /* ============================================================
-   REVISTA XV · LOOKBOOK PAGINADO — prototipo lumengala 045b
+   REVISTA XV · LOOKBOOK PAGINADO — prototipo lumengala 045c
    Revista interactiva: 6 páginas a pantalla completa que se
-   leen pasando hojas de derecha a izquierda (swipe, clic en
-   bordes/controles, flechas del teclado). Sin scroll vertical
-   continuo. Degradación: sin JS se apila vertical y se lee.
-   Identidad: papel frío + tinta + rosa editorial, Playfair
-   Display + Archivo (continúa la de 045a a propósito).
+   leen pasando hojas de derecha a izquierda (swipe con volteo
+   3D, clic en bordes/controles, flechas del teclado). Sin
+   scroll vertical continuo. Degradación: sin JS se apila
+   vertical y se lee. Identidad: papel frío + tinta + rosa
+   editorial, Playfair Display + Archivo (045a, a propósito).
    ============================================================ */
 :root{
   --paper:#F4F1EC;
@@ -224,6 +224,42 @@ html.js .page-inner::-webkit-scrollbar{display:none}
 html.js .page-inner{transform:translateX(0);transition:transform .68s var(--ease-folio)}
 html.js .page:not(.active) .page-inner{transform:translateX(2.4%)}
 
+/* volteo de hoja: giro con perspectiva, eje en el borde de la página */
+html.js .page{
+  transform-origin:left center;
+  backface-visibility:hidden;
+  transition:transform .68s var(--ease-folio);
+  will-change:transform;
+}
+html.js .mag.dragging .track,
+html.js .mag.dragging .page{transition:none!important}
+
+/* sombra progresiva del pliego durante el volteo (un canto oscuro por lado) */
+.turn-shade,.turn-shade--r{
+  position:absolute;inset:0;z-index:12;pointer-events:none;opacity:0;
+  transition:opacity .45s ease;
+}
+.turn-shade{background:linear-gradient(90deg,rgba(12,9,6,.8),rgba(12,9,6,0) 72%)}
+.turn-shade--r{background:linear-gradient(270deg,rgba(12,9,6,.8),rgba(12,9,6,0) 72%)}
+
+/* la perspectiva vive en el transform de cada hoja (punto de fuga propio,
+   no en el track: su origin quedaría fuera de pantalla y anularía el 3D).
+   El scale leve al girar hace visible el levantamiento en páginas a
+   pantalla completa (sin él, la silueta no cambia y el giro no se lee). */
+@keyframes turn-out-fwd{from{transform:perspective(1200px) rotateY(0deg) scale(1)}to{transform:perspective(1200px) rotateY(-44deg) scale(.9)}}
+@keyframes turn-in-fwd{from{transform:perspective(1200px) rotateY(34deg) scale(.95)}to{transform:perspective(1200px) rotateY(0deg) scale(1)}}
+@keyframes turn-out-prev{from{transform:perspective(1200px) rotateY(0deg) scale(1)}to{transform:perspective(1200px) rotateY(44deg) scale(.9)}}
+@keyframes turn-in-prev{from{transform:perspective(1200px) rotateY(-34deg) scale(.95)}to{transform:perspective(1200px) rotateY(0deg) scale(1)}}
+@keyframes shade-in-out{0%{opacity:0}45%{opacity:.75}100%{opacity:0}}
+html.js .track.turn-fwd .page.is-leaving{transform-origin:left center;animation:turn-out-fwd .68s var(--ease-folio) forwards}
+html.js .track.turn-fwd .page.is-entering{transform-origin:left center;animation:turn-in-fwd .68s var(--ease-folio) forwards}
+html.js .track.turn-prev .page.is-leaving{transform-origin:right center;animation:turn-out-prev .68s var(--ease-folio) forwards}
+html.js .track.turn-prev .page.is-entering{transform-origin:right center;animation:turn-in-prev .68s var(--ease-folio) forwards}
+html.js .track.turn-fwd .page.is-leaving .turn-shade,
+html.js .track.turn-fwd .page.is-entering .turn-shade,
+html.js .track.turn-prev .page.is-leaving .turn-shade{animation:shade-in-out .68s ease forwards}
+html.js .track.turn-prev .page.is-entering .turn-shade--r{animation:shade-in-out .68s ease forwards}
+
 /* pliego: sombra sutil en el doblez + página inactiva levemente baja */
 .page::before{
   content:"";position:absolute;inset:0;z-index:6;pointer-events:none;
@@ -362,6 +398,18 @@ html.js .hint{display:block}
   .fit-h{height:clamp(120px,24dvh,200px)}
   .fit-v{height:clamp(150px,30dvh,260px)}
   .fit-wide{height:clamp(90px,16dvh,160px)}
+}
+
+/* movimiento reducido: paso instantáneo, sin giro ni sombras animadas */
+@media (prefers-reduced-motion:reduce){
+  html.js .track,html.js .page,html.js .page-inner{transition:none}
+  html.js .track.turn-fwd .page.is-leaving,
+  html.js .track.turn-fwd .page.is-entering,
+  html.js .track.turn-prev .page.is-leaving,
+  html.js .track.turn-prev .page.is-entering{animation:none!important}
+  .turn-shade,.turn-shade--r{transition:none;animation:none!important}
+  html.js .reveal{opacity:1;transform:none;transition:none}
+  .hint{animation:none!important}
 }
 </style>
 </head>
@@ -555,7 +603,7 @@ html.js .hint{display:block}
           </div>
           <div class="colophon reveal">
             <span>Revista XV · Lookbook</span>
-            <span>Prototipo lumengala 045b</span>
+            <span>Prototipo lumengala 045c</span>
           </div>
         </div>
       </div>
@@ -604,6 +652,13 @@ const elNext = document.getElementById("pg-next");
 const hint = document.getElementById("hint");
 const pad = n => String(n).padStart(2, "0");
 let idx = 0;
+const REDUCED = !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
+
+/* sombras progresivas dentro de cada página (un canto oscuro por lado) */
+pages.forEach(p => {
+  p.insertAdjacentHTML("beforeend",
+    '<div class="turn-shade" aria-hidden="true"></div><div class="turn-shade--r" aria-hidden="true"></div>');
+});
 
 function activate(i) {
   pages.forEach((p, k) => {
@@ -621,8 +676,9 @@ function activate(i) {
     }
   });
 }
-function setIdx(i) {
+function setIdx(i, force) {
   const ni = Math.max(0, Math.min(N - 1, i));
+  if (ni === idx && !force) { track.style.transform = `translateX(${-idx * 100}%)`; return; }
   idx = ni;
   track.style.transform = `translateX(${-idx * 100}%)`;
   elCur.textContent = pad(idx + 1);
@@ -631,51 +687,179 @@ function setIdx(i) {
   if (hint && idx > 0) hint.classList.add("off");
   activate(idx);
 }
-const next = () => setIdx(idx + 1);
-const prev = () => setIdx(idx - 1);
+
+/* volteo por clases: botones, bordes, teclado y rueda */
+let turnTimer = null;
+function playTurn(to, dir) {
+  if (REDUCED) return;
+  track.classList.remove("turn-fwd", "turn-prev");
+  pages.forEach(p => p.classList.remove("is-leaving", "is-entering"));
+  void track.offsetWidth;                 // reinicia la animación si acaba de correr
+  track.classList.add(dir === "fwd" ? "turn-fwd" : "turn-prev");
+  pages[idx].classList.add("is-leaving");
+  pages[to].classList.add("is-entering");
+  clearTimeout(turnTimer);
+  turnTimer = setTimeout(() => {
+    track.classList.remove("turn-fwd", "turn-prev");
+    pages.forEach(p => p.classList.remove("is-leaving", "is-entering"));
+  }, 740);
+}
+function go(i) {
+  const ni = Math.max(0, Math.min(N - 1, i));
+  if (ni === idx) return;
+  playTurn(ni, ni > idx ? "fwd" : "prev");
+  setIdx(ni);
+}
+const next = () => go(idx + 1);
+const prev = () => go(idx - 1);
 elNext.addEventListener("click", next);
 elPrev.addEventListener("click", prev);
 document.querySelector(".edge--r").addEventListener("click", next);
 document.querySelector(".edge--l").addEventListener("click", prev);
-setIdx(0);
+setIdx(0, true);
 
-/* --- 2. Arrastre con seguimiento (swipe táctil y mouse) --- */
+/* --- 2. Arrastre con volteo en vivo ---
+   Touch por Touch Events: apenas el gesto gana el eje horizontal se hace
+   preventDefault, así ningún navegador se apropia del gesto ni lanza
+   touchcancel — el swipe funciona igual en las 6 páginas, también sobre
+   enlaces/botones (tap vs. arrastre desambiguado) y con flick rápido por
+   velocidad. El eje vertical queda nativo para el scroll interno si una
+   página desborda. Mouse por PointerEvents con captura de puntero. */
 let sx = 0, sy = 0, dx = 0, axis = null, down = false, suppressClick = false;
-mag.addEventListener("pointerdown", e => {
-  if (e.pointerType === "mouse" && e.button !== 0) return;
-  if (e.target.closest("a,button,input,textarea,select,label")) return;
-  down = true; axis = null; dx = 0;
-  sx = e.clientX; sy = e.clientY;
+let lastX = 0, lastT = 0, vel = 0;
+const CAMPO = "input,textarea,select";
+
+function clearDragStyles() {
+  pages.forEach(p => { p.style.transform = ""; p.style.transformOrigin = ""; });
+  mag.querySelectorAll(".turn-shade, .turn-shade--r").forEach(s => { s.style.opacity = ""; });
+}
+/* el pliego responde al dedo: la hoja actual se levanta, la vecina se asienta */
+function dragVisuals(p) {               // p = dx / ancho, ∈ [-1, 1]
+  const cur = pages[idx];
+  const fwd = p < 0;
+  const a = Math.abs(p);
+  cur.style.transformOrigin = fwd ? "left center" : "right center";
+  cur.style.transform = `perspective(1200px) rotateY(${(fwd ? -44 : 44) * a}deg) scale(${1 - .1 * a})`;
+  const shOut = cur.querySelector(".turn-shade");
+  if (shOut) shOut.style.opacity = Math.min(.8, a * 1.3);
+  const ni = idx + (fwd ? 1 : -1);
+  if (ni >= 0 && ni < N) {
+    const vec = pages[ni];
+    vec.style.transformOrigin = fwd ? "left center" : "right center";
+    vec.style.transform = `perspective(1200px) rotateY(${(fwd ? 34 : -34) * (1 - a)}deg) scale(${1 - .05 * (1 - a)})`;
+    const shIn = vec.querySelector(fwd ? ".turn-shade" : ".turn-shade--r");
+    if (shIn) shIn.style.opacity = Math.min(.55, (1 - a) * .7);
+  }
+}
+function medirVelocidad(x) {
+  const now = performance.now(), dt = now - lastT;
+  if (dt > 0) vel = (x - lastX) / dt;
+  lastX = x; lastT = now;
+}
+function goma(d) {                      // resistencia en los extremos
+  return (idx === 0 && d > 0) || (idx === N - 1 && d < 0) ? d * .35 : d;
+}
+function decidirCommit() {
+  if (axis !== "x") return 0;
+  const w = mag.clientWidth;
+  const umbral = Math.max(w * .18, 56);
+  if (dx < -umbral || (dx < -24 && vel < -.45)) return -1;   // siguiente (flick incl.)
+  if (dx > umbral || (dx > 24 && vel > .45)) return 1;       // anterior
+  return 0;
+}
+function endDrag(commit) {
+  if (!down) return;
+  down = false;
+  mag.classList.remove("dragging");
+  void mag.offsetWidth;                 // las transiciones vuelven a estar vivas
+  track.style.transition = "";
+  if (REDUCED) {
+    clearDragStyles();
+    track.style.transform = `translateX(${-idx * 100}%)`;
+  } else if (axis === "x") {
+    if (commit !== 0) {
+      const fwd = commit < 0, from = idx, to = idx - commit;
+      pages[from].style.transformOrigin = fwd ? "left center" : "right center";
+      pages[from].style.transform = `perspective(1200px) rotateY(${fwd ? -44 : 44}deg) scale(.9)`;
+      pages[to].style.transformOrigin = fwd ? "left center" : "right center";
+      pages[to].style.transform = "perspective(1200px) rotateY(0deg) scale(1)";
+      const shOut = pages[from].querySelector(".turn-shade");
+      if (shOut) shOut.style.opacity = ".75";
+    } else {
+      pages.forEach((p, k) => { if (Math.abs(k - idx) <= 1) p.style.transform = "perspective(1200px) rotateY(0deg) scale(1)"; });
+      track.style.transform = `translateX(${-idx * 100}%)`;
+    }
+  }
+  setTimeout(clearDragStyles, 780);
+  if (commit !== 0) {
+    suppressClick = true;
+    setTimeout(() => { suppressClick = false; }, 90);
+    setIdx(idx - commit);
+  }
+  dx = 0; axis = null;
+}
+
+mag.addEventListener("touchstart", e => {
+  if (e.touches.length !== 1) return;
+  const t = e.touches[0];
+  if (t.target.closest(CAMPO)) return;
+  down = true; axis = null; dx = 0; vel = 0;
+  sx = t.clientX; sy = t.clientY;
+  lastX = sx; lastT = performance.now();
   track.style.transition = "none";
+  mag.classList.add("dragging");
+}, { passive: true });
+mag.addEventListener("touchmove", e => {
+  if (!down) return;
+  if (e.touches.length !== 1) { endDrag(0); return; }    // pinch: abortar
+  const t = e.touches[0];
+  dx = t.clientX - sx;
+  const dy = t.clientY - sy;
+  if (!axis) {
+    if (Math.abs(dx) > 8 && Math.abs(dx) > Math.abs(dy) * 1.1) axis = "x";
+    else if (Math.abs(dy) > 10) axis = "y";
+  }
+  if (axis === "x") {
+    e.preventDefault();
+    medirVelocidad(t.clientX);
+    const d = goma(dx);
+    track.style.transform = `translateX(calc(${-idx * 100}% + ${d}px))`;
+    if (!REDUCED) dragVisuals(d / mag.clientWidth);
+  }
+}, { passive: false });
+mag.addEventListener("touchend", () => endDrag(decidirCommit()));
+mag.addEventListener("touchcancel", () => endDrag(0));
+
+mag.addEventListener("pointerdown", e => {
+  if (e.pointerType !== "mouse" || e.button !== 0) return;
+  if (e.target.closest("a,button,label," + CAMPO)) return;
+  down = true; axis = null; dx = 0; vel = 0;
+  sx = e.clientX; sy = e.clientY;
+  lastX = sx; lastT = performance.now();
+  track.style.transition = "none";
+  mag.classList.add("dragging");
+  try { mag.setPointerCapture(e.pointerId); } catch (_) {}
 });
 mag.addEventListener("pointermove", e => {
-  if (!down) return;
+  if (!down || e.pointerType !== "mouse") return;
   dx = e.clientX - sx;
   const dy = e.clientY - sy;
   if (!axis) {
-    if (Math.abs(dx) > 12 && Math.abs(dx) > Math.abs(dy) * 1.2) axis = "x";
-    else if (Math.abs(dy) > 12) axis = "y";
+    if (Math.abs(dx) > 8 && Math.abs(dx) > Math.abs(dy) * 1.1) axis = "x";
+    else if (Math.abs(dy) > 10) axis = "y";
   }
   if (axis === "x") {
-    track.style.transform = `translateX(calc(${-idx * 100}% + ${dx}px))`;
+    medirVelocidad(e.clientX);
+    const d = goma(dx);
+    track.style.transform = `translateX(calc(${-idx * 100}% + ${d}px))`;
+    if (!REDUCED) dragVisuals(d / mag.clientWidth);
   }
 });
-function endDrag() {
-  if (!down) return;
-  down = false;
-  track.style.transition = "";
-  if (axis === "x") {
-    const w = mag.clientWidth;
-    const umbral = Math.max(w * .18, 56);
-    if (dx < -umbral) { next(); suppressClick = true; }
-    else if (dx > umbral) { prev(); suppressClick = true; }
-    else setIdx(idx);
-    if (suppressClick) setTimeout(() => { suppressClick = false; }, 60);
-  }
-  dx = 0;
-}
-mag.addEventListener("pointerup", endDrag);
-mag.addEventListener("pointercancel", endDrag);
+mag.addEventListener("pointerup", e => {
+  if (e.pointerType !== "mouse") return;
+  endDrag(decidirCommit());
+});
+mag.addEventListener("pointercancel", () => endDrag(0));
 mag.addEventListener("click", e => {
   if (suppressClick) { e.preventDefault(); e.stopPropagation(); }
 }, true);
@@ -686,8 +870,8 @@ document.addEventListener("keydown", e => {
   if (t && t.closest && t.closest("input,textarea,select")) return;
   if (e.key === "ArrowLeft" || e.key === "PageDown") { e.preventDefault(); next(); }
   else if (e.key === "ArrowRight" || e.key === "PageUp") { e.preventDefault(); prev(); }
-  else if (e.key === "Home") { e.preventDefault(); setIdx(0); }
-  else if (e.key === "End") { e.preventDefault(); setIdx(N - 1); }
+  else if (e.key === "Home") { e.preventDefault(); go(0); }
+  else if (e.key === "End") { e.preventDefault(); go(N - 1); }
 });
 let wAcc = 0, wTimer = null;
 mag.addEventListener("wheel", e => {

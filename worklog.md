@@ -259,3 +259,50 @@ Registro de trabajo del repo aislado de diseño. La producción real
   6 páginas en móvil y escritorio: GOOD en los 4 strips.
 - Ciclo git: rama 045b-revista-paginada -> PR #10 -> escaneo anti-fugas ->
   merge -> deploy Pages -> verificación en vivo.
+
+## 2026-11-21 · Iteración 045c — «Revista XV»: swipe fiable en las 6 páginas + volteo de hoja marcado
+
+- **Swipe roto después de la página 01 (reporte en celular), tres causas:**
+  el gesto iba por PointerEvents + `touch-action:pan-y` y el navegador se
+  apropiaba del gesto ante cualquier jitter vertical (pointercancel, agudo
+  en iOS Safari); no había detección de *flick* (un gesto rápido de ~40px
+  no llegaba al umbral de 56px/18%); y los arrastres que empezaban sobre
+  enlaces/botones se descartaban por completo.
+- **Motor de gesto reescrito:** touch por Touch Events dedicados con
+  `preventDefault` apenas el eje horizontal gana (umbral bajo, |dx|>8 y
+  |dx|>|dy|·1.1) — ningún navegador reclama el gesto ni lanza
+  touchcancel; el eje vertical queda nativo para el scroll interno si una
+  página desborda. *Flick* por velocidad (umbral 24px + |v|>0.45 px/ms
+  en la dirección del gesto). Tap-vs-arrastre desambiguado sobre
+  enlaces/botones: tap dispara el clic, arrastre voltea y suprime el clic
+  fantasma (solo se excluyen campos de formulario). Mouse por
+  PointerEvents con setPointerCapture. Goma (resistencia) en los extremos
+  y pinch/touchcancel abortan sin navegar. Fix extra: los swipe abortados
+  ya no re-animan los revelados (guard en setIdx).
+- **Volteo de hoja marcado:** perspectiva por hoja vía `perspective()`
+  dentro del transform (la del track quedaba con origin fuera de pantalla
+  y anulaba el 3D); giro desde el borde —la que sale se levanta con
+  rotateY ∓44° y scale .9 (sin el scale, una página full-bleed girada
+  sobre eje vertical no cambia de silueta y el giro no se lee), la que
+  entra se asienta desde ±34°— con sombras progresivas del pliego (dos
+  cantos por página, pico ~.75, también en vivo durante el arrastre con
+  opacidad proporcional al dedo). Camino de botones/teclado/rueda/bordes
+  con keyframes + clases `turn-fwd`/`turn-prev` + `is-leaving`/
+  `is-entering` (limpieza a 740ms); camino de arrastre con estilos inline
+  y transiciones (.68s cubic-bezier de folio). `prefers-reduced-motion`
+  respetado en CSS (transiciones y animaciones fuera, revelados
+  visibles) y en JS (const REDUCED salta giros y sombras).
+- **Bug cazado por el E2E antes de publicar:** error de signo en la
+  refactorización (`to = idx + commit` con commit=-1 → página −1 →
+  TypeError y bloqueo total del avance por swipe); corregido a
+  `idx - commit` y verificado con TouchEvents sintéticos encadenados.
+- Calidad: lint 0 · typecheck 0 · 13/13 tests · build EXIT=0. E2E
+  agent-browser 375×667 y 1440×900: encadenado 01→06 y 06→01 por touch
+  en todas las páginas, flick real (40px/60ms) 06→05, adelante bloqueado
+  en 06 con goma, drag que nace sobre el botón de mapa voltea a la 4 sin
+  abrir el enlace, aborto conserva los revelados, teclado/bordes/
+  paginador por go(), matrix3d en vivo durante el gesto, fits intactos,
+  consola sin errores nuevos. Revisión visual VLM del frame a mitad de
+  volteo (móvil + escritorio): GOOD con giro y sombra de pliego legibles.
+- Ciclo git: rama 045c-volteo-swipe -> PR #11 -> escaneo anti-fugas ->
+  merge -> deploy Pages -> verificación en vivo.

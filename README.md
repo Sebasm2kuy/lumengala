@@ -59,17 +59,23 @@ ritmo, jerarquía y respiro visual en celular y escritorio.
   confirma en pantalla con `localStorage`: pendientes de evento real y
   backend antes de producción. `noindex` por coherencia con este repo.
 
-## Prototipo Revista XV · Lookbook (045a → 045b)
+## Prototipo Revista XV · Lookbook (045a → 045c)
 
 Segunda arquitectura distinta: una invitación de **15 años editada como una
-revista / lookbook**, hoy en su **edición paginada (045b)**: una revista
+revista / lookbook**, hoy en su **edición paginada (045c)**: una revista
 interactiva de **6 páginas a pantalla completa (`100dvh`) que se lee pasando
-hojas de derecha a izquierda** — swipe con seguimiento de dedo, clic en los
-bordes de la pantalla y en los controles del paginador, flechas del teclado
-(←/→, Inicio/Fin) y rueda horizontal de trackpad; transición fluida con
-sombra sutil de pliego y paginador visible `01 / 06`. Nació como página de
-scroll vertical asimétrico (045a) y se rediseñó a lectura paginada sin
-perder la identidad ni el enfoque.
+hojas de derecha a izquierda** — swipe con seguimiento de dedo (Touch Events
+con preventDefault por intención horizontal, *flick* rápido por velocidad y
+tap-vs-arrastre desambiguado, fiable en las 6 páginas y sobre enlaces),
+clic en los bordes de la pantalla y en los controles del paginador, flechas
+del teclado (←/→, Inicio/Fin) y rueda horizontal de trackpad; **transición
+de volteo 3D** (perspectiva por hoja, giro desde el borde con la página
+levantándose levemente del fondo y sombra progresiva en el pliego, también
+en vivo durante el arrastre) con paginador visible `01 / 06`, y paso
+instantáneo con `prefers-reduced-motion`. Nació como página de scroll
+vertical asimétrico (045a), se rediseñó a lectura paginada (045b) y se
+corrigió el gesto + se agregó el volteo marcado (045c), sin perder la
+identidad ni el enfoque.
 
 - Estructura editorial por páginas: 1 portada (Edición Nº 15, nombre,
   fecha y lugar) · 2 editorial de apertura + cuenta regresiva tipográfica
