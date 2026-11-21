@@ -243,13 +243,16 @@ export default function Colecciones() {
             </figure>
           )}
 
-          {/* Arquitectura 2 (045a): Revista / Lookbook Asimétrico, para XV.
+          {/* Arquitectura 2 (045a→045b): Revista XV · Lookbook, para XV.
               Misma lógica que Edición Crónica: "obra" extra SOLO en la vista
               [XV Años], fuera del catálogo COLECCIONES (tests del museo).
               Miniatura de portada de revista con la foto real de la sesión
               (imagen remota; se usa <img> y no next/image para no tocar la
               config de dominios del repo de pruebas) + masthead "Lucía" +
-              barra inferior con nº de edición y acento rosa editorial. */}
+              barra inferior con nº de edición y acento rosa editorial.
+              045b: la pieza es una revista paginada (6 páginas que se pasan
+              de derecha a izquierda) — la miniatura lo refleja con la marca
+              "06 páginas" y la portada real de la página 1. */}
           {filtro === "quince" && (
             <figure
               className="grupo-obra obra-entrante group"
@@ -259,7 +262,7 @@ export default function Colecciones() {
                 href={rutaPublica("/lookbook-xv.html")}
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label="Abrir el prototipo Revista XV · Lookbook: invitación editorial asimétrica (abre en una pestaña nueva)"
+                aria-label="Abrir el prototipo Revista XV · Lookbook: revista interactiva paginada, se lee pasando páginas (abre en una pestaña nueva)"
               >
                 <div className="marco-obra">
                   <div className="relative aspect-[4/5] overflow-hidden rounded-[3px] bg-[#15120E]">
@@ -306,7 +309,7 @@ export default function Colecciones() {
                         />
                         <div className="flex items-baseline justify-between text-[7.5px] uppercase tracking-[0.22em] text-[#F2EDE4]/75">
                           <span>Marzo 2027</span>
-                          <span className="text-[#E3A2B8]">Lookbook</span>
+                          <span className="text-[#E3A2B8]">06 páginas</span>
                         </div>
                         <p className="mt-1.5 text-[8px] uppercase tracking-[0.24em] text-[#F2EDE4]/60">
                           Guadalajara · Sábado 13
@@ -332,8 +335,8 @@ export default function Colecciones() {
                   Prototipo · no es una colección
                 </p>
                 <p className="mx-auto mt-1.5 max-w-[260px] text-[12px] leading-relaxed text-tinta-media">
-                  Segunda arquitectura: spreads asimétricos de revista con
-                  sesión de exteriores para la fiesta.
+                  Segunda arquitectura: revista interactiva de 6 páginas que
+                  se lee pasando hojas, con sesión de exteriores.
                 </p>
               </figcaption>
             </figure>

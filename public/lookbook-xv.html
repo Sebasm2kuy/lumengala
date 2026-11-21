@@ -2,20 +2,23 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#15120E">
 <title>Lucía — Revista XV · Lookbook</title>
-<meta name="description" content="La fiesta de quince de Lucía, editada como una revista: spreads asimétricos, sesión al aire libre y la noche del 13 de marzo de 2027.">
+<meta name="description" content="La fiesta de quince de Lucía, editada como una revista interactiva que se lee pasando páginas. Sábado 13 de marzo de 2027 · Guadalajara.">
 <meta name="robots" content="noindex, nofollow">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;0,900;1,400;1,500&family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 /* ============================================================
-   REVISTA XV · LOOKBOOK ASIMÉTRICO — prototipo lumengala 045a
-   Segunda arquitectura distinta: editorial de moda, no crónica.
-   Identidad: papel frío + tinta + rosa_editorial (magenta suave),
-   Playfair Display (titulares) + Archivo (texto/etiquetas).
+   REVISTA XV · LOOKBOOK PAGINADO — prototipo lumengala 045b
+   Revista interactiva: 6 páginas a pantalla completa que se
+   leen pasando hojas de derecha a izquierda (swipe, clic en
+   bordes/controles, flechas del teclado). Sin scroll vertical
+   continuo. Degradación: sin JS se apila vertical y se lee.
+   Identidad: papel frío + tinta + rosa editorial, Playfair
+   Display + Archivo (continúa la de 045a a propósito).
    ============================================================ */
 :root{
   --paper:#F4F1EC;
@@ -23,21 +26,21 @@
   --ink:#191511;
   --ink-soft:#5E5850;
   --line:rgba(25,21,17,.16);
-  --rose:#C25E7A;          /* rosa editorial */
+  --rose:#C25E7A;
   --rose-deep:#9E4660;
-  --rose-pale:#EFD9DF;
   --dark:#15120E;
+  --dark-2:#1B1611;
   --cream:#F2EDE4;
-  --cream-soft:rgba(242,237,228,.6);
+  --cream-soft:rgba(242,237,228,.62);
   --line-cream:rgba(242,237,228,.2);
   --serif:"Playfair Display",Georgia,"Times New Roman",serif;
   --sans:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --ease-folio:cubic-bezier(.77,0,.18,1);
 }
 *{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth}
 body{
   font-family:var(--sans);
-  background:var(--paper);
+  background:var(--dark);
   color:var(--ink);
   font-size:16px;
   line-height:1.6;
@@ -45,192 +48,50 @@ body{
 }
 img{display:block;max-width:100%}
 a{color:inherit}
+button{font-family:inherit}
 
-/* — Aparición al scroll (gating js para no-JS) — */
-.reveal{opacity:1}
-html.js .reveal{opacity:0;transform:translateY(14px);transition:opacity .6s ease,transform .6s ease}
-html.js .reveal.in{opacity:1;transform:none}
-@media (prefers-reduced-motion:reduce){
-  html{scroll-behavior:auto}
-  html.js .reveal{opacity:1;transform:none;transition:none}
-}
-
-/* — Tipos utilitarios — */
+/* — tipos utilitarios — */
 .eyebrow{
-  font-family:var(--sans);
-  font-size:10px;font-weight:600;
-  letter-spacing:.32em;text-transform:uppercase;
-  color:var(--rose);
-}
-.eyebrow--ink{color:var(--ink-soft)}
-.eyebrow--cream{color:var(--cream-soft)}
-
-.wrap{max-width:1080px;margin:0 auto;padding:0 20px}
-@media (min-width:760px){.wrap{padding:0 32px}}
-
-/* ════════════ PORTADA / MASTHEAD ════════════ */
-.masthead{
-  background:var(--dark);
-  color:var(--cream);
-  padding:26px 0 34px;
-}
-.masthead .top{
-  display:flex;justify-content:space-between;align-items:baseline;
-  font-size:9.5px;font-weight:600;letter-spacing:.28em;text-transform:uppercase;
-  color:var(--cream-soft);
-  border-bottom:1px solid var(--line-cream);
-  padding-bottom:12px;
-}
-.masthead .top b{color:var(--cream);font-weight:700}
-.masthead h1{
-  font-family:var(--serif);
-  font-weight:900;
-  font-size:clamp(64px,17vw,168px);
-  line-height:.92;
-  letter-spacing:-.015em;
-  text-align:center;
-  margin:26px 0 8px;
-}
-.masthead .name-sub{
-  text-align:center;
-  font-family:var(--serif);font-style:italic;font-weight:400;
-  font-size:clamp(15px,3.4vw,26px);
-  color:var(--cream-soft);
-}
-.masthead .issue{
-  display:flex;justify-content:space-between;gap:16px;
-  margin-top:24px;padding-top:14px;
-  border-top:1px solid var(--line-cream);
-  font-size:9px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;
-  color:var(--cream-soft);
-  text-align:center;
-}
-.masthead .issue span{flex:1}
-.masthead .issue span+span{border-left:1px solid var(--line-cream)}
-@media (max-width:520px){
-  .masthead .issue{flex-direction:column;gap:6px}
-  .masthead .issue span+span{border-left:none;border-top:1px solid var(--line-cream);padding-top:6px}
-}
-
-/* ════════════ GRILLA ASIMÉTRICA (base) ════════════ */
-.spread{
-  padding:56px 0;
-  border-top:1px solid var(--line);
-}
-.spread--flip{background:var(--paper-2)}
-.spread--dark{background:var(--dark);color:var(--cream);border-top-color:transparent}
-
-/*.Editorial: cada spread tiene su PROPIA proporción — nada se repite. */
-.duo{
-  display:grid;
-  grid-template-columns:1fr;
-  gap:26px;
-  align-items:start;
-}
-@media (min-width:760px){
-  .duo{grid-template-columns:7fr 5fr;gap:40px;align-items:center}
-  .duo--flip{grid-template-columns:5fr 7fr}
-  .duo--flip .ph{order:-1}
-}
-.ph{overflow:hidden;background:var(--paper-2);position:relative}
-.ph img{width:100%;height:100%;object-fit:cover;filter:saturate(.92)}
-.ratio-v{aspect-ratio:4/5}
-.ratio-tall{aspect-ratio:3/4.4}
-.ratio-h{aspect-ratio:16/10}
-.ratio-wide{aspect-ratio:21/9}
-
-/* pie de foto estilo crédito de revista */
-.credit{
-  font-size:9px;letter-spacing:.22em;text-transform:uppercase;
-  color:var(--ink-soft);margin-top:10px;
-}
-.spread--dark .credit{color:var(--cream-soft)}
-
-/* columna editorial desplazada */
-.col-note{
-  display:flex;flex-direction:column;gap:14px;
-}
-@media (min-width:760px){
-  .col-note{transform:translateY(26px)}     /* asimetría intencional */
-  .duo--flip .col-note{transform:translateY(-26px)}
-}
-.kick{
-  font-family:var(--serif);
-  font-weight:700;
-  font-size:clamp(26px,4.2vw,44px);
-  line-height:1.04;
-  letter-spacing:-.01em;
-}
-.kick em{font-style:italic;font-weight:400;color:var(--rose)}
-.spread--dark .kick em{color:var(--rose)}
-.note{
-  font-size:14.5px;line-height:1.75;color:var(--ink-soft);
-  max-width:44ch;
-}
-.spread--dark .note{color:var(--cream-soft)}
-.byline{
-  font-size:9.5px;letter-spacing:.24em;text-transform:uppercase;
-  color:var(--rose-deep);font-weight:600;
-}
-.spread--dark .byline{color:var(--rose)}
-
-/* — tira de tres marcos desiguales — */
-.tri{
-  display:grid;
-  grid-template-columns:1fr;
-  gap:16px;
-}
-@media (min-width:760px){
-  .tri{grid-template-columns:2fr 1.35fr 1fr;gap:20px;align-items:start}
-  .tri .b{margin-top:34px}   /* escalonado, no fila pareja */
-  .tri .c{margin-top:68px}
-}
-.tri .ph{height:auto}
-.tri .b img{aspect-ratio:4/5;object-fit:cover}
-.tri .c img{aspect-ratio:4/5;object-fit:cover}
-.tri .a img{aspect-ratio:16/10;object-fit:cover}
-
-/* — flipa horizontal sangrada — */
-.bleed{
-  margin:0 -20px;
-}
-@media (min-width:760px){.bleed{margin:0 -32px}}
-
-/* — contador editorial (sin reloj) — */
-.count-strip{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:1px;
-  background:var(--line-cream);
-  border:1px solid var(--line-cream);
-}
-.count-strip .cell{
-  background:var(--dark);
-  padding:18px 6px 14px;
-  text-align:center;
-}
-.count-strip .num{
-  font-family:var(--serif);
-  font-variant-numeric:tabular-nums;
-  font-size:clamp(30px,6vw,54px);
-  font-weight:500;
-  line-height:1;
-  color:var(--cream);
-}
-.count-strip .lbl{
-  display:block;
-  margin-top:8px;
-  font-size:8.5px;font-weight:600;
+  font-size:9.5px;font-weight:600;
   letter-spacing:.3em;text-transform:uppercase;
   color:var(--rose);
 }
+.eyebrow--cream{color:var(--cream-soft)}
+.kick{
+  font-family:var(--serif);
+  font-weight:700;
+  font-size:clamp(24px,4.6vw,40px);
+  line-height:1.06;
+  letter-spacing:-.01em;
+  color:var(--ink);
+}
+.kick em{font-style:italic;font-weight:400;color:var(--rose)}
+.page--dark .kick{color:var(--cream)}
+.note{font-size:13.5px;line-height:1.68;color:var(--ink-soft);max-width:46ch}
+.page--dark .note{color:var(--cream-soft)}
+.byline{font-size:9px;letter-spacing:.24em;text-transform:uppercase;color:var(--rose-deep);font-weight:600}
+.credit{font-size:8.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-soft);margin-top:8px}
+.page--dark .credit{color:var(--cream-soft)}
+.head{margin-bottom:16px}
+.head .eyebrow{display:block;margin-bottom:8px}
+
+/* — fotos con altura acotada (cabe siempre en la página) — */
+.ph{overflow:hidden;background:var(--paper-2);position:relative}
+.ph img{width:100%;height:100%;object-fit:cover;filter:saturate(.92)}
+.fit-v img{height:clamp(185px,36dvh,400px)}
+.fit-v{height:clamp(185px,36dvh,400px)}
+.fit-h img{height:clamp(135px,24dvh,280px)}
+.fit-h{height:clamp(135px,24dvh,280px)}
+.fit-wide img{height:clamp(110px,20dvh,240px)}
+.fit-wide{height:clamp(110px,20dvh,240px)}
+.ph figcaption,.ph + .credit{position:static}
 
 /* — botones — */
 .btn{
-  display:inline-flex;align-items:center;justify-content:center;gap:10px;
-  padding:13px 26px;
-  font-family:var(--sans);font-size:10.5px;font-weight:700;
-  letter-spacing:.22em;text-transform:uppercase;text-decoration:none;
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  padding:11px 20px;
+  font-size:9.5px;font-weight:700;
+  letter-spacing:.2em;text-transform:uppercase;text-decoration:none;
   border:1px solid var(--ink);
   transition:background .3s ease,color .3s ease,border-color .3s ease;
 }
@@ -238,300 +99,611 @@ html.js .reveal.in{opacity:1;transform:none}
 .btn--solid:hover{background:var(--rose-deep);border-color:var(--rose-deep)}
 .btn--ghost{background:transparent;color:var(--ink)}
 .btn--ghost:hover{background:var(--ink);color:var(--cream)}
-.spread--dark .btn--ghost{border-color:var(--cream-soft);color:var(--cream)}
-.spread--dark .btn--ghost:hover{background:var(--cream);color:var(--dark);border-color:var(--cream)}
-.btn-row{display:flex;flex-wrap:wrap;gap:14px}
+.page--dark .btn--ghost{border-color:var(--cream-soft);color:var(--cream)}
+.page--dark .btn--ghost:hover{background:var(--cream);color:var(--dark);border-color:var(--cream)}
+.btn-row{display:flex;flex-wrap:wrap;gap:10px}
 
-/* — detalles prácticos: tabla editorial sobre panel propio — */
-.specs-panel{
-  background:var(--cream);
-  border:1px solid var(--line);
-  margin-top:30px;
+/* — cuenta regresiva tipográfica (sin reloj analógico) — */
+.count-strip{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  gap:1px;background:var(--line-cream);
+  border:1px solid var(--line-cream);
 }
-.specs{
-  display:grid;
-  grid-template-columns:1fr;
-  gap:0;
+.count-strip .cell{background:var(--dark-2);padding:13px 4px 11px;text-align:center}
+.count-strip .num{
+  font-family:var(--serif);font-variant-numeric:tabular-nums;
+  font-size:clamp(24px,5.6vw,42px);font-weight:500;line-height:1;
+  color:var(--cream);
 }
-@media (min-width:760px){.specs{grid-template-columns:1fr 1fr}}
-.spec{
-  padding:20px 18px 22px;
-  border-bottom:1px solid var(--line);
+.count-strip .lbl{
+  display:block;margin-top:6px;
+  font-size:7.5px;font-weight:600;letter-spacing:.26em;text-transform:uppercase;
+  color:var(--rose);
 }
+
+/* — coordenadas y specs — */
+.coords{border-top:1px solid var(--line);margin-bottom:16px}
+.coord{
+  display:flex;justify-content:space-between;gap:14px;
+  padding:10px 2px;border-bottom:1px solid var(--line);
+  align-items:baseline;
+}
+.coord dt{font-size:8.5px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--rose-deep)}
+.coord dd{font-family:var(--serif);font-size:15.5px;font-weight:500;text-align:right}
+.specs-panel{background:var(--cream);border:1px solid var(--line)}
+.specs{display:grid;grid-template-columns:1fr}
+.spec{padding:11px 14px 13px;border-bottom:1px solid var(--line)}
 .spec:last-child{border-bottom:none}
-.spec dt{
-  font-size:9px;font-weight:600;letter-spacing:.28em;text-transform:uppercase;
-  color:var(--rose-deep);margin-bottom:8px;
+.spec dt{font-size:8.5px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--rose-deep);margin-bottom:5px}
+.spec dd{font-family:var(--serif);font-size:16px;font-weight:500;line-height:1.3;color:var(--ink)}
+.spec dd small{display:block;font-family:var(--sans);font-size:10.5px;color:var(--ink-soft);margin-top:4px;line-height:1.5}
+@media (min-width:760px){
+  .specs{grid-template-columns:1fr 1fr}
+  .spec:nth-child(odd):last-child{grid-column:1/-1}
 }
-.spec dd{
-  font-family:var(--serif);
-  font-size:19px;font-weight:500;line-height:1.35;
-  color:var(--ink);
-}
-.spec dd small{display:block;font-family:var(--sans);font-size:11.5px;color:var(--ink-soft);margin-top:5px;letter-spacing:.02em}
 
-/* — formulario RSVP — */
-.field{margin-bottom:18px}
+/* — RSVP — */
+.field{margin-bottom:13px}
 .field label{
-  display:block;font-size:9px;font-weight:600;
-  letter-spacing:.26em;text-transform:uppercase;
-  color:var(--rose);margin-bottom:8px;
+  display:block;font-size:8.5px;font-weight:600;
+  letter-spacing:.24em;text-transform:uppercase;
+  color:var(--rose);margin-bottom:6px;
 }
 .field input[type="text"],.field input[type="number"],.field textarea{
-  width:100%;
-  background:transparent;
+  width:100%;background:transparent;
   border:none;border-bottom:1px solid var(--line-cream);
   color:var(--cream);
-  font-family:var(--serif);font-size:17px;
-  padding:8px 2px;
-  outline:none;
+  font-family:var(--serif);font-size:15px;
+  padding:6px 2px;outline:none;
   transition:border-color .3s ease;
 }
 .field input:focus,.field textarea:focus{border-bottom-color:var(--rose)}
-.field textarea{resize:vertical;min-height:64px;font-family:var(--sans);font-size:14px}
-.radio-row{display:flex;gap:18px;flex-wrap:wrap}
+.field textarea{resize:vertical;min-height:44px;font-family:var(--sans);font-size:12.5px}
+.radio-row{display:flex;gap:16px;flex-wrap:wrap}
 .radio-row label{
-  display:inline-flex;align-items:center;gap:8px;
-  font-family:var(--serif);font-size:16px;color:var(--cream);
+  display:inline-flex;align-items:center;gap:7px;
+  font-family:var(--serif);font-size:14.5px;color:var(--cream);
   cursor:pointer;
 }
 .radio-row input{accent-color:var(--rose)}
+.pax-row{display:flex;gap:10px;align-items:flex-end}
+.pax-row .field{flex:1}
 .confirm{
   display:none;
   border:1px solid var(--line-cream);
-  padding:26px 22px;text-align:center;
+  padding:20px 16px;text-align:center;
 }
 .confirm.show{display:block}
-.confirm .big{
-  font-family:var(--serif);font-style:italic;
-  font-size:clamp(22px,3.6vw,30px);color:var(--cream);
-}
-.confirm .tiny{margin-top:10px;font-size:11px;color:var(--cream-soft);letter-spacing:.06em}
+.confirm .big{font-family:var(--serif);font-style:italic;font-size:clamp(19px,3.4vw,26px);color:var(--cream)}
+.confirm .tiny{margin-top:8px;font-size:11px;color:var(--cream-soft);letter-spacing:.04em}
+.confirm .eyebrow{margin-top:12px;display:block}
 
-/* — colofón — */
+/* — colofón al pie de la contraportada — */
 .colophon{
-  background:var(--dark);
+  margin-top:18px;padding-top:12px;border-top:1px solid var(--line-cream);
+  display:flex;justify-content:space-between;gap:12px;
+  font-size:8px;letter-spacing:.22em;text-transform:uppercase;
   color:var(--cream-soft);
-  padding:30px 0 40px;
-  text-align:center;
-  font-size:9.5px;letter-spacing:.26em;text-transform:uppercase;
 }
-.colophon .rule{
-  display:block;width:56px;height:1px;background:var(--rose);
-  margin:14px auto 0;
+
+/* ════════════ MOTOR DE LA REVISTA ════════════ */
+/* Sin JS: páginas apiladas en vertical, lectura normal. */
+.mag{position:relative;background:var(--dark)}
+.track{display:block}
+.page{
+  position:relative;overflow:hidden;
+  min-height:100vh;min-height:100svh;
+  display:flex;flex-direction:column;
+  background:var(--paper);
+}
+.page--flip{background:linear-gradient(180deg,#F7F4EF,#EFEAE1)}
+.page--dark{background:linear-gradient(180deg,#1A1510,#12100C);color:var(--cream)}
+.page-inner{
+  position:relative;z-index:10;width:100%;max-width:1080px;margin:0 auto;
+  flex:1;display:flex;flex-direction:column;
+  padding:44px 20px 76px;
+}
+.stack{width:100%;margin:auto 0}
+
+/* Con JS: revista horizontal, sin scroll de página. */
+html.js,html.js body{height:100vh;height:100dvh}
+html.js body{overflow:hidden;overscroll-behavior:none}
+html.js .mag{position:fixed;inset:0;overflow:hidden;touch-action:pan-y}
+html.js .track{
+  display:flex;height:100vh;height:100dvh;
+  transform:translateX(0);
+  transition:transform .68s var(--ease-folio);
+  will-change:transform;
+}
+html.js .page{flex:0 0 100%;height:100vh;height:100dvh;min-height:0}
+html.js .page-inner{
+  height:100%;overflow-y:auto;scrollbar-width:none;
+  padding:40px 20px 88px;
+}
+html.js .page-inner::-webkit-scrollbar{display:none}
+html.js .page-inner{transform:translateX(0);transition:transform .68s var(--ease-folio)}
+html.js .page:not(.active) .page-inner{transform:translateX(2.4%)}
+
+/* pliego: sombra sutil en el doblez + página inactiva levemente baja */
+.page::before{
+  content:"";position:absolute;inset:0;z-index:6;pointer-events:none;
+  background:rgba(21,18,14,.16);opacity:0;transition:opacity .68s ease;
+}
+html.js .page:not(.active)::before{opacity:1}
+.page::after{
+  content:"";position:absolute;inset:0;z-index:5;pointer-events:none;
+  box-shadow:inset 52px 0 64px -46px rgba(21,18,14,.34),
+             inset -52px 0 64px -46px rgba(21,18,14,.18);
+}
+
+/* revelados por página activa (gating js) */
+.reveal{opacity:1}
+html.js .reveal{opacity:0;transform:translateY(13px);transition:opacity .55s ease,transform .55s ease}
+html.js .reveal.in{opacity:1;transform:none}
+
+/* paginador visible 01 / 06 */
+.pager{
+  display:none;
+  position:fixed;left:0;right:0;bottom:0;z-index:40;
+  align-items:center;justify-content:space-between;gap:12px;
+  padding:9px 16px calc(9px + env(safe-area-inset-bottom));
+  background:rgba(21,18,14,.55);
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+  border-top:1px solid var(--line-cream);
+  color:var(--cream);
+}
+html.js .pager{display:flex}
+.pager .brand{font-size:8.5px;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:var(--cream-soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pager .ctrl{display:flex;align-items:center;gap:10px}
+.pager .nums{font-variant-numeric:tabular-nums;font-size:11px;letter-spacing:.24em;color:var(--cream);min-width:84px;text-align:center}
+.pager .nums b{font-weight:700;color:#E3A2B8}
+.pbtn{
+  width:40px;height:33px;flex:none;
+  display:grid;place-items:center;
+  background:transparent;border:1px solid var(--line-cream);
+  color:var(--cream);cursor:pointer;
+  transition:background .3s ease,color .3s ease,opacity .3s ease;
+}
+.pbtn svg{width:13px;height:13px}
+.pbtn:hover:not(:disabled){background:var(--cream);color:var(--dark)}
+.pbtn:disabled{opacity:.32;cursor:default}
+
+/* bordes clicables (solo donde no hay contenido) */
+.edge{
+  display:none;position:fixed;top:0;bottom:52px;width:64px;
+  z-index:8;background:none;border:none;cursor:pointer;padding:0;
+}
+html.js .edge{display:block}
+.edge--l{left:0}
+.edge--r{right:0}
+.edge::after{
+  position:absolute;top:50%;transform:translateY(-50%);
+  font-family:var(--serif);font-size:26px;color:var(--cream);
+  opacity:0;transition:opacity .3s ease,transform .3s ease;
+}
+.edge--l::after{content:"‹";left:14px}
+.edge--r::after{content:"›";right:14px}
+.edge:hover::after{opacity:.65}
+.edge--r:hover::after{transform:translate(2px,-50%)}
+.edge--l:hover::after{transform:translate(-2px,-50%)}
+
+/* pista en la portada */
+.hint{
+  display:none;
+  position:absolute;left:50%;bottom:74px;z-index:7;
+  transform:translateX(-50%);
+  font-size:8.5px;font-weight:600;letter-spacing:.3em;text-transform:uppercase;
+  color:rgba(242,237,228,.9);white-space:nowrap;
+  animation:hint-pulse 2.4s ease-in-out infinite;
+  text-shadow:0 1px 10px rgba(21,18,14,.7);
+}
+html.js .hint{display:block}
+.hint.off{display:none}
+@keyframes hint-pulse{
+  0%,100%{transform:translateX(-50%)}
+  50%{transform:translateX(calc(-50% + 9px))}
+}
+
+/* ════════════ PÁGINA 1 · PORTADA ════════════ */
+.page--cover{background:var(--dark)}
+.cover-bg{position:absolute;inset:0;z-index:1;width:100%;height:100%;object-fit:cover;filter:saturate(.9)}
+.cover-scrim{
+  position:absolute;inset:0;z-index:2;pointer-events:none;
+  background:linear-gradient(180deg,rgba(21,18,14,.8),rgba(21,18,14,.14) 36%,rgba(21,18,14,.16) 60%,rgba(21,18,14,.9));
+}
+.cover-inner{z-index:3}
+.cover-inner .stack{height:100%;display:flex;flex-direction:column;justify-content:space-between;margin:0}
+.cover-top{
+  display:flex;justify-content:space-between;align-items:center;gap:10px;
+  font-size:8.5px;font-weight:600;letter-spacing:.26em;text-transform:uppercase;
+  color:var(--cream);
+  background:rgba(21,18,14,.55);
+  -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
+  padding:10px 14px;border:1px solid rgba(242,237,228,.28);
+}
+.cover-top b{color:#E3A2B8;font-weight:700}
+.cover-name{
+  font-family:var(--serif);font-weight:900;
+  font-size:clamp(58px,19vw,148px);line-height:.9;letter-spacing:-.01em;
+  color:var(--cream);
+  text-shadow:0 2px 26px rgba(21,18,14,.6);
+}
+.cover-tag{
+  font-family:var(--serif);font-style:italic;
+  font-size:clamp(14px,3.6vw,23px);
+  color:var(--cream);
+  text-shadow:0 1px 14px rgba(21,18,14,.7);
+}
+.cover-rule{height:1px;background:rgba(242,237,228,.42);margin:16px 0 12px}
+.cover-meta{
+  display:flex;justify-content:space-between;gap:10px;
+  font-size:8.5px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--cream-soft);
+}
+
+/* ════════════ GRILLAS DE PÁGINA ════════════ */
+.duo{display:grid;grid-template-columns:1fr;gap:20px;align-items:center}
+@media (min-width:760px){
+  .duo{grid-template-columns:1.05fr .95fr;gap:44px}
+  .duo--flip{grid-template-columns:.95fr 1.05fr}
+  .duo--flip .ph{order:-1}
+}
+.tri{display:grid;grid-template-columns:1.05fr .9fr;gap:14px}
+.tri .c{grid-column:1/-1}
+.tri .b{margin-top:26px}
+@media (min-width:760px){
+  .tri{grid-template-columns:2fr 1.4fr 1fr;gap:18px;align-items:start}
+  .tri .b{margin-top:30px}
+  .tri .c{grid-column:auto;margin-top:60px}
+}
+
+/* pantallas muy cortas: menos foto, mismo contenido */
+@media (max-height:600px){
+  .fit-h{height:clamp(120px,24dvh,200px)}
+  .fit-v{height:clamp(150px,30dvh,260px)}
+  .fit-wide{height:clamp(90px,16dvh,160px)}
 }
 </style>
 </head>
 <body>
+<div class="mag" id="mag">
+  <div class="track" id="track" aria-roledescription="revista">
 
-<!-- ════════════ MASTHEAD / PORTADA DE LA REVISTA ════════════ -->
-<header class="masthead reveal">
-  <div class="wrap">
-    <div class="top">
-      <span>Edición <b>Nº 15</b></span>
-      <span>Marzo · 2027</span>
-      <span>Lookbook</span>
-    </div>
-    <h1>Lucía</h1>
-    <p class="name-sub">quince años, editados como una revista</p>
-    <div class="issue">
-      <span>Sábado 13 de marzo de 2027</span>
-      <span>Jardines de la Quinta · Guadalajara</span>
-      <span>La noche empieza a las 20:00</span>
-    </div>
-  </div>
-</header>
-
-<main>
-
-<!-- ════════════ SPREAD 01 — EDITORIAL DE APERTURA ════════════ -->
-<section class="spread reveal">
-  <div class="wrap duo">
-    <div class="ph ratio-tall">
-      <img src="https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/1746547fe9b9.png" alt="Lucía al aire libre, luz natural de ciudad" loading="eager">
-    </div>
-    <div class="col-note">
-      <p class="eyebrow">Editorial de apertura</p>
-      <h2 class="kick">Antes de la <em>noche</em>,<br>todo empieza <em>afuera</em></h2>
-      <p class="note">
-        Esta edición se fotografió donde Lucía pasa la semana previa a la
-        fiesta: el café de la esquina, el parque del viernes, las calles que
-        camina sin querer llegar. Ropa de todos los días, luz de día — el
-        vestido de gala se reserva para la noche del 13 y no aparece en
-        estas páginas.
-      </p>
-      <p class="byline">Sesión: exteriores · Ciudad y parque</p>
-    </div>
-  </div>
-</section>
-
-<!-- ════════════ SPREAD 02 — LA FECHA (CONTADOR + MAPA + CALENDARIO) ════════════ -->
-<section class="spread spread--dark spread--flip reveal">
-  <div class="wrap duo duo--flip">
-    <div class="col-note">
-      <p class="eyebrow eyebrow--cream">La cita</p>
-      <h2 class="kick">Faltan los <em>días</em><br>y ya se siente</h2>
-      <div class="count-strip" id="countdown" role="timer" aria-label="Tiempo restante para la fiesta">
-        <div class="cell"><span class="num" id="cd-d">···</span><span class="lbl">Días</span></div>
-        <div class="cell"><span class="num" id="cd-h">··</span><span class="lbl">Horas</span></div>
-        <div class="cell"><span class="num" id="cd-m">··</span><span class="lbl">Min</span></div>
-        <div class="cell"><span class="num" id="cd-s">··</span><span class="lbl">Seg</span></div>
-      </div>
-      <p class="note" style="margin-top:18px">
-        Jardines de la Quinta, Guadalajara. Recepción desde las 20:00;
-        vals a las 22:30. Llegá con margen para el recorrido del jardín.
-      </p>
-      <div class="btn-row">
-        <a class="btn btn--ghost" href="https://www.google.com/maps/search/?api=1&query=Jardines+de+la+Quinta+Guadalajara" target="_blank" rel="noopener">Ver en el mapa</a>
-        <a class="btn btn--ghost" href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=XV+de+Luc%C3%ADa&dates=20270314T020000Z%2F20270314T090000Z&location=Jardines+de+la+Quinta,+Guadalajara&details=Recepci%C3%B3n+20%3A00+·+Vals+22%3A30" target="_blank" rel="noopener">Agregar al calendario</a>
-      </div>
-    </div>
-    <div class="ph ratio-h">
-      <img src="https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/7bff84a8a72e.jpg" alt="Calles y arquitectura de la ciudad al atardecer" loading="lazy">
-      <p class="credit">Guadalajara · recorrido de la edición</p>
-    </div>
-  </div>
-</section>
-
-<!-- ════════════ SPREAD 03 — SESIÓN: TRES MARCOS ESCALONADOS ════════════ -->
-<section class="spread reveal">
-  <div class="wrap">
-    <div class="col-note" style="margin-bottom:26px;max-width:56ch">
-      <p class="eyebrow">Sesión de exteriores</p>
-      <h2 class="kick">Tres <em>encuadres</em>, una misma semana</h2>
-    </div>
-    <div class="tri">
-      <div class="a">
-        <div class="ph ratio-h">
-          <img src="https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/fbe5587f77f6.jpg" alt="Grupo de amigas en el parque, ropa casual" loading="lazy">
-        </div>
-        <p class="credit">Lunes · el parque</p>
-      </div>
-      <div class="b">
-        <div class="ph ratio-v">
-          <img src="https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/441c24b9e1bf.jpg" alt="Lucía con abrigo de mezclilla, calle de la ciudad" loading="lazy">
-        </div>
-        <p class="credit">Miércoles · la esquina</p>
-      </div>
-      <div class="c">
-        <div class="ph ratio-v">
-          <img src="https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/1c1ade46f8be.jpg" alt="Retrato urbano de Lucía, luz de tarde" loading="lazy">
-        </div>
-        <p class="credit">Viernes · la avenida</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ════════════ SPREAD 04 — CÓDIGO DE VESTUARIO + FLIPA SANGRADA ════════════ -->
-<section class="spread spread--flip reveal">
-  <div class="wrap">
-    <div class="duo" style="margin-bottom:26px">
-      <div class="col-note">
-        <p class="eyebrow">Detalles de la edición</p>
-        <h2 class="kick">Cómo venir <em>vestido</em></h2>
-      </div>
-      <div class="ph ratio-tall" style="max-width:340px;margin-left:auto">
-        <img src="https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/441c24b9e1bf.jpg" alt="Referencia de vestuario casual de exterior" loading="lazy">
-        <p class="credit">Referencia · abrigo de día</p>
-      </div>
-    </div>
-    <div class="bleed ph ratio-wide">
-      <img src="https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/f41224ea08b9.png" alt="Lucía de espaldas entre los árboles del parque" loading="lazy">
-    </div>
-    <!-- specs en fondo propio (no sobre foto): legibilidad primero -->
-    <div class="specs-panel">
-      <dl class="specs">
-        <div class="spec">
-          <dt>Dress code</dt>
-          <dd>Coctel de día<small>Se celebra de noche, pero el espíritu es de tarde: paleta clara, sin negro formal.</small></dd>
-        </div>
-        <div class="spec">
-          <dt>Tono guía</dt>
-          <dd>Rosa pálido &amp; champán<small>El color de la decoración de la Quinta; combínalo o dejá que converse.</small></dd>
-        </div>
-      </dl>
-    </div>
-  </div>
-</section>
-
-<!-- ════════════ SPREAD 05 — RSVP ════════════ -->
-<section class="spread spread--dark reveal">
-  <div class="wrap duo">
-    <div class="ph ratio-v" style="max-width:380px">
-      <img src="https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/1746547fe9b9.png" alt="Lucía en el café, la mañana del shoot" loading="lazy">
-      <p class="credit">La mañana de la sesión</p>
-    </div>
-    <div class="col-note">
-      <p class="eyebrow eyebrow--cream">Última página</p>
-      <h2 class="kick">¿Salís en la <em>nota</em>?</h2>
-      <p class="note">
-        Confirmá antes del 20 de febrero para que la mesa quede en la
-        edición impresa. Los acompañantes cuentan como páginas extra.
-      </p>
-      <form id="rsvp-form" novalidate>
-        <div class="field">
-          <label for="nombre">Tu nombre</label>
-          <input type="text" id="nombre" name="nombre" autocomplete="name">
-        </div>
-        <div class="field">
-          <label>¿Asistís?</label>
-          <div class="radio-row">
-            <label><input type="radio" name="asistencia" value="si"> Sí, ahí estaré</label>
-            <label><input type="radio" name="asistencia" value="no"> No podré</label>
+    <!-- ═══ PÁGINA 1 · PORTADA ═══ -->
+    <section class="page page--cover active" role="group" aria-roledescription="página" aria-label="Página 1 de 6 — Portada">
+      <img class="cover-bg" src="https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/1746547fe9b9.png" alt="Lucía al aire libre en la calle, luz natural de la ciudad">
+      <div class="cover-scrim" aria-hidden="true"></div>
+      <div class="page-inner cover-inner">
+        <div class="stack">
+          <div class="cover-top reveal"><span>Prototipo</span><b>Edición Nº 15</b><span>Lookbook</span></div>
+          <div>
+            <h1 class="cover-name reveal">Lucía</h1>
+            <p class="cover-tag reveal">quince años, editados como una revista</p>
+            <div class="cover-rule reveal" aria-hidden="true"></div>
+            <p class="cover-meta reveal"><span>Marzo 2027</span><span>Guadalajara · Sábado 13</span></p>
           </div>
         </div>
-        <div class="field">
-          <label for="pax">Acompañantes</label>
-          <input type="number" id="pax" name="pax" min="0" max="4" value="0">
-        </div>
-        <div class="field">
-          <label for="mensaje">Una línea para Lucía (opcional)</label>
-          <textarea id="mensaje" name="mensaje" rows="2"></textarea>
-        </div>
-        <button class="btn btn--ghost" type="submit">Confirmar asistencia</button>
-      </form>
-      <div class="confirm" id="rsvp-confirm" role="status">
-        <p class="big" id="confirm-title">Gracias.</p>
-        <p class="tiny" id="confirm-text">Tu respuesta quedó registrada.</p>
-        <p class="eyebrow eyebrow--cream" style="margin-top:14px">Cierre de edición</p>
       </div>
-    </div>
+      <p class="hint" id="hint" aria-hidden="true">deslizá para pasar la página ‹</p>
+    </section>
+
+    <!-- ═══ PÁGINA 2 · EDITORIAL + CUENTA REGRESIVA ═══ -->
+    <section class="page page--dark" role="group" aria-roledescription="página" aria-label="Página 2 de 6 — Editorial y cuenta regresiva">
+      <div class="page-inner">
+        <div class="stack">
+          <div class="duo">
+            <div class="col-note">
+              <p class="eyebrow eyebrow--cream reveal">Editorial de apertura</p>
+              <h2 class="kick reveal" style="margin-top:8px">Antes de la <em>noche</em>,<br>todo empieza <em>afuera</em></h2>
+              <p class="note reveal" style="margin-top:12px">
+                Esta edición se fotografió donde Lucía pasa la semana previa a
+                la fiesta: el café de la esquina, el parque del viernes, las
+                calles que camina sin querer llegar. Ropa de todos los días,
+                luz de día — el vestido se guarda para la noche del 13.
+              </p>
+              <p class="byline reveal" style="margin-top:10px;color:var(--rose)">Sesión: exteriores · ciudad y parque</p>
+            </div>
+            <div>
+              <div class="count-strip reveal" id="countdown" role="timer" aria-label="Tiempo restante para la fiesta">
+                <div class="cell"><span class="num" id="cd-d">···</span><span class="lbl">Días</span></div>
+                <div class="cell"><span class="num" id="cd-h">··</span><span class="lbl">Horas</span></div>
+                <div class="cell"><span class="num" id="cd-m">··</span><span class="lbl">Min</span></div>
+                <div class="cell"><span class="num" id="cd-s">··</span><span class="lbl">Seg</span></div>
+              </div>
+              <figure class="ph fit-h reveal" style="margin-top:16px">
+                <img src="https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/93b7fcd2c109.jpg" alt="Amigas de Lucía en el parque, ropa casual de tarde" loading="lazy">
+              </figure>
+              <p class="credit reveal">La sesión · parque, lunes por la tarde</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ PÁGINA 3 · COORDENADAS ═══ -->
+    <section class="page" role="group" aria-roledescription="página" aria-label="Página 3 de 6 — Coordenadas de la fiesta">
+      <div class="page-inner">
+        <div class="stack">
+          <div class="head">
+            <p class="eyebrow reveal">Las coordenadas</p>
+            <h2 class="kick reveal" style="margin-top:8px">La noche tiene <em>dirección</em></h2>
+          </div>
+          <div class="duo duo--flip">
+            <div>
+              <dl class="coords">
+                <div class="coord reveal"><dt>Recepción</dt><dd>20:00 h</dd></div>
+                <div class="coord reveal"><dt>El vals</dt><dd>22:30 h</dd></div>
+                <div class="coord reveal"><dt>Lugar</dt><dd>Jardines de la Quinta</dd></div>
+                <div class="coord reveal"><dt>Ciudad</dt><dd>Guadalajara, Jalisco</dd></div>
+              </dl>
+              <div class="btn-row reveal">
+                <a class="btn btn--solid" href="https://www.google.com/maps/search/?api=1&query=Jardines+de+la+Quinta+Guadalajara" target="_blank" rel="noopener">Ver en el mapa</a>
+                <a class="btn btn--ghost" href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=XV+de+Luc%C3%ADa&dates=20270314T020000Z%2F20270314T090000Z&location=Jardines+de+la+Quinta,+Guadalajara&details=Recepci%C3%B3n+20%3A00+·+Vals+22%3A30" target="_blank" rel="noopener">Al calendario</a>
+              </div>
+            </div>
+            <figure class="ph fit-h reveal">
+              <img src="https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/fbe5587f77f6.jpg" alt="Parque otoñal, el paisaje de la sesión" loading="lazy">
+            </figure>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ PÁGINA 4 · PLIEGO DE LOOKBOOK ═══ -->
+    <section class="page page--flip" role="group" aria-roledescription="página" aria-label="Página 4 de 6 — Pliego de la sesión">
+      <div class="page-inner">
+        <div class="stack">
+          <div class="head">
+            <p class="eyebrow reveal">Pliego central · la sesión</p>
+            <h2 class="kick reveal" style="margin-top:8px">Tres <em>encuadres</em>,<br>una misma semana</h2>
+          </div>
+          <div class="tri">
+            <figure class="ph fit-v reveal">
+              <img src="https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/441c24b9e1bf.jpg" alt="Lucía con abrigo de mezclilla en la esquina de la ciudad" loading="lazy">
+              <figcaption class="credit">Miércoles · la esquina</figcaption>
+            </figure>
+            <figure class="ph fit-v b reveal">
+              <img src="https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/f41224ea08b9.png" alt="Lucía de espaldas entre los árboles del parque, jean y campera" loading="lazy">
+              <figcaption class="credit">Viernes · el parque</figcaption>
+            </figure>
+            <figure class="ph fit-wide c reveal">
+              <img src="https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/1c1ade46f8be.jpg" alt="Retrato urbano de Lucía en la avenida, luz de tarde" loading="lazy">
+              <figcaption class="credit">Sábado · la avenida</figcaption>
+            </figure>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ PÁGINA 5 · CÓDIGO DE VESTIMENTA ═══ -->
+    <section class="page" role="group" aria-roledescription="página" aria-label="Página 5 de 6 — Código de vestimenta y detalles">
+      <div class="page-inner">
+        <div class="stack">
+          <div class="head">
+            <p class="eyebrow reveal">Cómo venir</p>
+            <h2 class="kick reveal" style="margin-top:8px">El código de la <em>noche</em></h2>
+          </div>
+          <div class="duo">
+            <figure class="ph fit-h reveal">
+              <img src="https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/0c52ff59f772.jpg" alt="Referencia de look casual de tarde al aire libre" loading="lazy">
+            </figure>
+            <div>
+              <dl class="specs-panel specs">
+                <div class="spec reveal">
+                  <dt>Dress code</dt>
+                  <dd>Coctel de día<small>Espíritu de tarde: paleta clara, sin negro formal.</small></dd>
+                </div>
+                <div class="spec reveal">
+                  <dt>Tono guía</dt>
+                  <dd>Rosa pálido &amp; champán<small>Los colores de la decoración de la Quinta.</small></dd>
+                </div>
+                <div class="spec reveal">
+                  <dt>Clima</dt>
+                  <dd>Tarde fresca<small>Es al aire libre: llevá un abrigo ligero para la noche.</small></dd>
+                </div>
+              </dl>
+              <p class="credit reveal" style="margin-top:8px">Referencia · look de tarde, sesión del lunes</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ PÁGINA 6 · CONTRAPORTADA · RSVP ═══ -->
+    <section class="page page--dark" role="group" aria-roledescription="página" aria-label="Página 6 de 6 — Confirmación de asistencia">
+      <div class="page-inner">
+        <div class="stack">
+          <div class="duo">
+            <figure class="ph fit-h reveal ph--p6">
+              <img src="https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/7bff84a8a72e.jpg" alt="Lucía en la ciudad, la tarde antes de la noche" loading="lazy">
+              <figcaption class="credit">La tarde antes de la noche</figcaption>
+            </figure>
+            <div>
+              <p class="eyebrow eyebrow--cream reveal">Última página</p>
+              <h2 class="kick reveal" style="margin-top:8px">¿Salís en la <em>nota</em>?</h2>
+              <p class="note reveal" style="margin-top:10px">Confirmá antes del 20 de febrero para que tu mesa quede en la edición impresa.</p>
+              <form id="rsvp-form" novalidate style="margin-top:14px">
+                <div class="field">
+                  <label for="nombre">Tu nombre</label>
+                  <input type="text" id="nombre" name="nombre" autocomplete="name">
+                </div>
+                <div class="field">
+                  <label>¿Asistís?</label>
+                  <div class="radio-row">
+                    <label><input type="radio" name="asistencia" value="si"> Sí, ahí estaré</label>
+                    <label><input type="radio" name="asistencia" value="no"> No podré</label>
+                  </div>
+                </div>
+                <div class="pax-row">
+                  <div class="field">
+                    <label for="pax">Acompañantes</label>
+                    <input type="number" id="pax" name="pax" min="0" max="4" value="0">
+                  </div>
+                  <button class="btn btn--ghost" type="submit" style="margin-bottom:13px">Confirmar</button>
+                </div>
+                <div class="field">
+                  <label for="mensaje">Una línea para Lucía (opcional)</label>
+                  <textarea id="mensaje" name="mensaje" rows="1"></textarea>
+                </div>
+              </form>
+              <div class="confirm" id="rsvp-confirm" role="status">
+                <p class="big" id="confirm-title">Gracias.</p>
+                <p class="tiny" id="confirm-text">Tu respuesta quedó registrada.</p>
+                <span class="eyebrow eyebrow--cream">Cierre de edición</span>
+              </div>
+            </div>
+          </div>
+          <div class="colophon reveal">
+            <span>Revista XV · Lookbook</span>
+            <span>Prototipo lumengala 045b</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
   </div>
-</section>
 
-</main>
+  <!-- bordes clicables: derecho avanza, izquierdo retrocede -->
+  <button class="edge edge--l" type="button" aria-label="Página anterior"></button>
+  <button class="edge edge--r" type="button" aria-label="Página siguiente"></button>
 
-<footer class="colophon">
-  <p>Revista XV · Lookbook · prototipo lumengala 045a</p>
-  <span class="rule" aria-hidden="true"></span>
-</footer>
+  <!-- paginador -->
+  <footer class="pager">
+    <span class="brand">Lucía · Revista XV</span>
+    <div class="ctrl">
+      <button class="pbtn" id="pg-prev" type="button" aria-label="Página anterior">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+      <span class="nums" aria-live="polite"><b id="pg-cur">01</b> / 06</span>
+      <button class="pbtn" id="pg-next" type="button" aria-label="Página siguiente">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+      </button>
+    </div>
+  </footer>
+</div>
 
 <script>
 /* ==========================================================
-   REVISTA XV — comportamiento (mismos patrones del estudio)
+   REVISTA XV PAGINADA — comportamiento
+   Bloque CONFIG: lo único que cambia por evento en producción.
    ========================================================== */
 const CONFIG = {
   fechaFiesta: "2027-03-13T20:00:00-06:00",  // recepción
-  whatsapp: "https://wa.me/521234567890"
+  whatsapp: "https://wa.me/521234567890"     // provisional
 };
 
-/* --- 1. Revelados --- */
+/* --- 1. Sistema de páginas (derecha a izquierda) --- */
 document.documentElement.classList.add("js");
-const io = new IntersectionObserver(entries => {
-  entries.forEach(e => {
-    if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); }
-  });
-}, { threshold: 0.12, rootMargin: "0px 0px -6% 0px" });
-document.querySelectorAll(".reveal").forEach(el => io.observe(el));
+const mag = document.getElementById("mag");
+const track = document.getElementById("track");
+const pages = [...track.querySelectorAll(".page")];
+const N = pages.length;
+const elCur = document.getElementById("pg-cur");
+const elPrev = document.getElementById("pg-prev");
+const elNext = document.getElementById("pg-next");
+const hint = document.getElementById("hint");
+const pad = n => String(n).padStart(2, "0");
+let idx = 0;
 
-/* --- 2. Contador editorial (sin reloj circular) --- */
+function activate(i) {
+  pages.forEach((p, k) => {
+    const on = k === i;
+    p.classList.toggle("active", on);
+    try { p.inert = !on; } catch (_) {}
+    if (on) {
+      const rs = p.querySelectorAll(".reveal");
+      rs.forEach(r => { r.classList.remove("in"); r.style.transitionDelay = (90 + [...rs].indexOf(r) * 70) + "ms"; });
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        rs.forEach(r => r.classList.add("in"));
+      }));
+    } else {
+      p.querySelectorAll(".reveal.in").forEach(r => r.classList.remove("in"));
+    }
+  });
+}
+function setIdx(i) {
+  const ni = Math.max(0, Math.min(N - 1, i));
+  idx = ni;
+  track.style.transform = `translateX(${-idx * 100}%)`;
+  elCur.textContent = pad(idx + 1);
+  elPrev.disabled = idx === 0;
+  elNext.disabled = idx === N - 1;
+  if (hint && idx > 0) hint.classList.add("off");
+  activate(idx);
+}
+const next = () => setIdx(idx + 1);
+const prev = () => setIdx(idx - 1);
+elNext.addEventListener("click", next);
+elPrev.addEventListener("click", prev);
+document.querySelector(".edge--r").addEventListener("click", next);
+document.querySelector(".edge--l").addEventListener("click", prev);
+setIdx(0);
+
+/* --- 2. Arrastre con seguimiento (swipe táctil y mouse) --- */
+let sx = 0, sy = 0, dx = 0, axis = null, down = false, suppressClick = false;
+mag.addEventListener("pointerdown", e => {
+  if (e.pointerType === "mouse" && e.button !== 0) return;
+  if (e.target.closest("a,button,input,textarea,select,label")) return;
+  down = true; axis = null; dx = 0;
+  sx = e.clientX; sy = e.clientY;
+  track.style.transition = "none";
+});
+mag.addEventListener("pointermove", e => {
+  if (!down) return;
+  dx = e.clientX - sx;
+  const dy = e.clientY - sy;
+  if (!axis) {
+    if (Math.abs(dx) > 12 && Math.abs(dx) > Math.abs(dy) * 1.2) axis = "x";
+    else if (Math.abs(dy) > 12) axis = "y";
+  }
+  if (axis === "x") {
+    track.style.transform = `translateX(calc(${-idx * 100}% + ${dx}px))`;
+  }
+});
+function endDrag() {
+  if (!down) return;
+  down = false;
+  track.style.transition = "";
+  if (axis === "x") {
+    const w = mag.clientWidth;
+    const umbral = Math.max(w * .18, 56);
+    if (dx < -umbral) { next(); suppressClick = true; }
+    else if (dx > umbral) { prev(); suppressClick = true; }
+    else setIdx(idx);
+    if (suppressClick) setTimeout(() => { suppressClick = false; }, 60);
+  }
+  dx = 0;
+}
+mag.addEventListener("pointerup", endDrag);
+mag.addEventListener("pointercancel", endDrag);
+mag.addEventListener("click", e => {
+  if (suppressClick) { e.preventDefault(); e.stopPropagation(); }
+}, true);
+
+/* --- 3. Teclado y rueda horizontal (trackpad) --- */
+document.addEventListener("keydown", e => {
+  const t = e.target;
+  if (t && t.closest && t.closest("input,textarea,select")) return;
+  if (e.key === "ArrowLeft" || e.key === "PageDown") { e.preventDefault(); next(); }
+  else if (e.key === "ArrowRight" || e.key === "PageUp") { e.preventDefault(); prev(); }
+  else if (e.key === "Home") { e.preventDefault(); setIdx(0); }
+  else if (e.key === "End") { e.preventDefault(); setIdx(N - 1); }
+});
+let wAcc = 0, wTimer = null;
+mag.addEventListener("wheel", e => {
+  if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;
+  wAcc += e.deltaX;
+  clearTimeout(wTimer);
+  wTimer = setTimeout(() => { wAcc = 0; }, 200);
+  if (Math.abs(wAcc) > 90) { wAcc > 0 ? next() : prev(); wAcc = 0; }
+}, { passive: true });
+
+/* --- 4. Cuenta regresiva tipográfica (sin reloj circular) --- */
 const deadline = new Date(CONFIG.fechaFiesta).getTime();
 const elD = document.getElementById("cd-d"),
       elH = document.getElementById("cd-h"),
       elM = document.getElementById("cd-m"),
       elS = document.getElementById("cd-s");
-const pad = (n, w = 2) => String(n).padStart(w, "0");
 function tick() {
   const diff = deadline - Date.now();
   if (diff <= 0) {
@@ -541,40 +713,55 @@ function tick() {
     return;
   }
   const s = Math.floor(diff / 1000);
-  elD.textContent = pad(Math.floor(s / 86400), 3);
-  elH.textContent = pad(Math.floor(s / 3600) % 24);
-  elM.textContent = pad(Math.floor(s / 60) % 60);
-  elS.textContent = pad(s % 60);
+  elD.textContent = pad2(Math.floor(s / 86400), 3);
+  elH.textContent = pad2(Math.floor(s / 3600) % 24);
+  elM.textContent = pad2(Math.floor(s / 60) % 60);
+  elS.textContent = pad2(s % 60);
 }
+const pad2 = (n, w = 2) => String(n).padStart(w, "0");
 tick();
 const timer = setInterval(tick, 1000);
 
-/* --- 3. RSVP: confirmación local (prototipo, sin backend) --- */
+/* --- 5. RSVP: confirmación local (prototipo, sin backend) --- */
 const form = document.getElementById("rsvp-form");
+const confirmBox = document.getElementById("rsvp-confirm");
+const KEY = "rsvp-lookbook-xv";
+function showConfirm(d, repetida) {
+  const primero = d.nombre.trim().split(" ")[0];
+  document.getElementById("confirm-title").textContent = `Gracias, ${primero}.`;
+  document.getElementById("confirm-text").textContent =
+    repetida
+      ? "Tu respuesta ya estaba registrada — te esperamos el 13 de marzo."
+      : d.asistencia === "si"
+        ? d.pax > 0
+          ? `Te esperamos el 13 de marzo — con ${d.pax} acompañante${d.pax > 1 ? "s" : ""} en la mesa.`
+          : "Te esperamos el 13 de marzo en Jardines de la Quinta."
+        : "La revista te va a extrañar. Gracias por avisar.";
+  form.style.display = "none";
+  confirmBox.classList.add("show");
+}
+let stored = null;
+try { stored = JSON.parse(localStorage.getItem(KEY) || "null"); } catch (_) {}
+if (stored && stored.nombre) showConfirm(stored, true);
 form.addEventListener("submit", ev => {
   ev.preventDefault();
   const nombre = form.nombre.value.trim();
   if (!nombre) { form.nombre.focus(); return; }
   const asistencia = form.querySelector('input[name="asistencia"]:checked');
   if (!asistencia) { form.querySelector('input[name="asistencia"]').focus(); return; }
-  const pax = Number(form.pax.value);
-  const msg = form.mensaje.value.trim();
-  const data = { nombre, asistencia: asistencia.value, pax, mensaje: msg, fecha: new Date().toISOString() };
-  try { localStorage.setItem("rsvp-lookbook-xv", JSON.stringify(data)); } catch (_) {}
-  const primero = nombre.split(" ")[0];
-  document.getElementById("confirm-title").textContent = `Gracias, ${primero}.`;
-  document.getElementById("confirm-text").textContent =
-    asistencia.value === "si"
-      ? pax > 0
-        ? `Te esperamos el 13 de marzo — con ${pax} acompañante${pax > 1 ? "s" : ""} en la mesa.`
-        : "Te esperamos el 13 de marzo en Jardines de la Quinta."
-      : "La revista te va a extrañar. Gracias por avisar.";
-  form.style.display = "none";
-  document.getElementById("rsvp-confirm").classList.add("show");
-  document.getElementById("rsvp-confirm").scrollIntoView({ behavior: "smooth", block: "center" });
+  const data = {
+    nombre,
+    asistencia: asistencia.value,
+    pax: Number(form.pax.value),
+    mensaje: form.mensaje.value.trim(),
+    fecha: new Date().toISOString()
+  };
+  try { localStorage.setItem(KEY, JSON.stringify(data)); } catch (_) {}
+  showConfirm(data, false);
+  confirmBox.scrollIntoView({ behavior: "smooth", block: "nearest" });
 });
 
-/* --- 4. WhatsApp desde CONFIG --- */
+/* --- 6. WhatsApp desde CONFIG --- */
 document.querySelectorAll('a[href^="https://wa.me"]').forEach(a => a.href = CONFIG.whatsapp);
 </script>
 </body>
