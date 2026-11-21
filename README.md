@@ -43,8 +43,10 @@ III. Galería → IV. Detalles / dress code → V. RSVP), cada uno con su propio
 ritmo, jerarquía y respiro visual en celular y escritorio.
 
 - Archivo autocontenido en `public/edicion-cronica.html` (HTML+CSS+JS
-  inline, sin build): se sirve en `/lumengala/edicion-cronica.html` y queda
-  enlazado desde la nota de cierre de la galería de colecciones.
+  inline, sin build): se sirve en `/lumengala/edicion-cronica.html` y su
+  acceso vive en la **vista [Bodas] de la galería de colecciones** como
+  tarjeta prototipo (portada tipográfica propia, fuera del catálogo de
+  colecciones).
 - Apertura limpia (cero porcentajes en carga, contenido visible sin JS),
   cuenta regresiva en vivo sin reloj analógico, capítulos claros/oscuros
   alternados, índice lateral de romanos en escritorio,
