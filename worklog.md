@@ -172,3 +172,43 @@ Registro de trabajo del repo aislado de diseño. La producción real
   marcando capítulo activo; export servido bajo /lumengala/ verificado.
 - Ciclo git: rama 044f-edicion-cronica -> PR -> escaneo anti-fugas -> merge
   -> deploy Pages -> verificación del prototipo en vivo.
+
+## 2026-11-21 · Iteración 045a — Prototipo «Revista XV · Lookbook»: arquitectura asimétrica de revista
+
+- Segunda arquitectura distinta (después de Edición Crónica 044f), para XV:
+  una invitación de 15 años editada como revista / lookbook asimétrico.
+  Cinco spreads con composición propia: apertura (vertical 3:4.4 + columna
+  desplazada), la cita (contador + mapa/calendario, foto horizontal 16:10),
+  sesión (tira de tres marcos escalonados 2fr/1.35fr/1fr con margen
+  escalonado), vestuario (duo + flipa sangrada 21:9 + panel de specs) y
+  RSVP (vertical + formulario). Nada de bloques simétricos repetidos.
+- Enfoque XV y exteriores: exclusivamente fotos de exteriores casuales
+  (ciudad, parque, calles); sin vestidos de gala para preservar la
+  sorpresa de la noche. 23 candidatas re-hosteadas (image-search),
+  curadas con VLM en dos pasadas (descartes por marca de agua, collage,
+  texto sobreimpreso y vestimenta no casual); 7 fotos finales 4V+3H,
+  todas verificadas 200 en CDN.
+- Identidad propia: papel frío #F4F1EC + tinta #191511 + rosa editorial
+  #C25E7A, Playfair Display 900 + Archivo — deliberadamente distinta de la
+  dirección dorada de la landing y del marfil/terracota de Edición Crónica.
+- Funciones: contador tipográfico D·H·M·S sin reloj analógico (fecha real
+  13.03.2027), botones a Google Maps y Google Calendar, dress code en
+  panel de specs legible, RSVP con confirmación personalizada
+  (singular/plural de acompañantes) y localStorage (rsvp-lookbook-xv).
+- Galería: tarjeta prototipo SOLO en la vista [XV Años] (misma lógica que
+  Edición Crónica en [Bodas]), fuera del catálogo COLECCIONES; portada de
+  revista con la foto hero de la sesión, masthead «Lucía», tira de
+  edición y dateline; legibilidad sobre foto resuelta con degradado +
+  píldoras translúcidas en tira superior y tagline (iterado con VLM hasta
+  GOOD). Contador de obras ahora dice «N obras + prototipo» en las vistas
+  filtradas. Imagen remota con <img> (no next/image) para no tocar la
+  config de dominios del repo de pruebas.
+- Fixes durante E2E: URL de imagen ciudad corregida (prefijo de set
+  duplicado, 404), specs con color de texto adaptado al panel claro,
+  colofón en una línea, espaciado del duo de vestuario.
+- Calidad: lint 0 · typecheck 0 · 13/13 tests · build EXIT=0 con basePath.
+  E2E agent-browser: 375px y 1440px sin overflow horizontal, 8/8 imágenes
+  cargadas, contador tictaqueando (112 días), RSVP completo verificado,
+  revisión visual VLM GOOD en móvil y escritorio.
+- Ciclo git: rama 045a-lookbook-xv -> PR #9 -> escaneo anti-fugas -> merge
+  -> deploy Pages -> verificación en vivo.
