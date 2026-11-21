@@ -778,13 +778,20 @@ function endDrag(commit) {
     track.style.transform = `translateX(${-idx * 100}%)`;
   } else if (axis === "x") {
     if (commit !== 0) {
-      const fwd = commit < 0, from = idx, to = idx - commit;
-      pages[from].style.transformOrigin = fwd ? "left center" : "right center";
-      pages[from].style.transform = `perspective(1200px) rotateY(${fwd ? -44 : 44}deg) scale(.9)`;
-      pages[to].style.transformOrigin = fwd ? "left center" : "right center";
-      pages[to].style.transform = "perspective(1200px) rotateY(0deg) scale(1)";
-      const shOut = pages[from].querySelector(".turn-shade");
-      if (shOut) shOut.style.opacity = ".75";
+      const fwd = commit < 0, from = idx;
+      const to = Math.max(0, Math.min(N - 1, idx - commit));
+      if (to !== from) {
+        pages[from].style.transformOrigin = fwd ? "left center" : "right center";
+        pages[from].style.transform = `perspective(1200px) rotateY(${fwd ? -44 : 44}deg) scale(.9)`;
+        pages[to].style.transformOrigin = fwd ? "left center" : "right center";
+        pages[to].style.transform = "perspective(1200px) rotateY(0deg) scale(1)";
+        const shOut = pages[from].querySelector(".turn-shade");
+        if (shOut) shOut.style.opacity = ".75";
+      } else {
+        // en el borde de la revista: la hoja vuelve a asentarse, sin volteo
+        pages[from].style.transform = "perspective(1200px) rotateY(0deg) scale(1)";
+        track.style.transform = `translateX(${-idx * 100}%)`;
+      }
     } else {
       pages.forEach((p, k) => { if (Math.abs(k - idx) <= 1) p.style.transform = "perspective(1200px) rotateY(0deg) scale(1)"; });
       track.style.transform = `translateX(${-idx * 100}%)`;
