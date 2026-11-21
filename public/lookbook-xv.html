@@ -12,13 +12,15 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;0,900;1,400;1,500&family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 /* ============================================================
-   REVISTA XV · LOOKBOOK PAGINADO — prototipo lumengala 045c
+   REVISTA XV · LOOKBOOK PAGINADO — prototipo lumengala 045d
    Revista interactiva: 6 páginas a pantalla completa que se
-   leen pasando hojas de derecha a izquierda (swipe con volteo
-   3D, clic en bordes/controles, flechas del teclado). Sin
-   scroll vertical continuo. Degradación: sin JS se apila
-   vertical y se lee. Identidad: papel frío + tinta + rosa
-   editorial, Playfair Display + Archivo (045a, a propósito).
+   leen pasando hojas de derecha a izquierda con volteo físico
+   3D (lomo en el borde izquierdo, lámina de dos caras con
+   dorso de papel, sombras de pliegue), swipe con la hoja
+   obedeciendo al dedo, clic en bordes/controles y flechas del
+   teclado. Degradación: sin JS se apila vertical y se lee.
+   Identidad: papel frío + tinta + rosa editorial, Playfair
+   Display + Archivo (045a, a propósito).
    ============================================================ */
 :root{
   --paper:#F4F1EC;
@@ -36,6 +38,7 @@
   --serif:"Playfair Display",Georgia,"Times New Roman",serif;
   --sans:"Archivo","Helvetica Neue",Arial,sans-serif;
   --ease-folio:cubic-bezier(.77,0,.18,1);
+  --ease-flip:cubic-bezier(.46,.05,.28,.99);
 }
 *{margin:0;padding:0;box-sizing:border-box}
 body{
@@ -205,17 +208,30 @@ button{font-family:inherit}
 }
 .stack{width:100%;margin:auto 0}
 
-/* Con JS: revista horizontal, sin scroll de página. */
+/* Con JS: revista paginada — hojas apiladas en un espacio 3D. */
 html.js,html.js body{height:100vh;height:100dvh}
 html.js body{overflow:hidden;overscroll-behavior:none}
 html.js .mag{position:fixed;inset:0;overflow:hidden;touch-action:pan-y}
+/* contenedor del libro: perspectiva compartida + espacio 3D */
 html.js .track{
-  display:flex;height:100vh;height:100dvh;
-  transform:translateX(0);
-  transition:transform .68s var(--ease-folio);
-  will-change:transform;
+  position:absolute;inset:0;
+  perspective:1800px;
+  transform-style:preserve-3d;
 }
-html.js .page{flex:0 0 100%;height:100vh;height:100dvh;min-height:0}
+/* cada hoja es una lámina apilada; solo la activa y las del giro se ven */
+html.js .page{
+  position:absolute;inset:0;min-height:0;
+  visibility:hidden;
+  transform-style:preserve-3d;
+  transform-origin:left center;
+  transition:transform .56s var(--ease-flip),opacity .56s var(--ease-flip);
+  will-change:transform;
+  z-index:1;
+}
+html.js .page.active{visibility:visible;z-index:2}
+html.js .page.flipping{visibility:visible;z-index:6}   /* la hoja girando, por encima */
+html.js .page.under{visibility:visible;z-index:2}      /* la revelada, debajo */
+html.js .mag.dragging .page{transition:none!important}
 html.js .page-inner{
   height:100%;overflow-y:auto;scrollbar-width:none;
   padding:40px 20px 88px;
@@ -224,41 +240,65 @@ html.js .page-inner::-webkit-scrollbar{display:none}
 html.js .page-inner{transform:translateX(0);transition:transform .68s var(--ease-folio)}
 html.js .page:not(.active) .page-inner{transform:translateX(2.4%)}
 
-/* volteo de hoja: giro con perspectiva, eje en el borde de la página */
-html.js .page{
-  transform-origin:left center;
-  backface-visibility:hidden;
-  transition:transform .68s var(--ease-folio);
-  will-change:transform;
+/* lámina de dos caras: frente con el contenido, dorso limpio de papel.
+   backface-visibility oculta cada cara desde su lado — el contenido
+   jamás se ve invertido en espejo durante el giro. */
+html.js .leaf-front,html.js .leaf-back{
+  position:absolute;inset:0;
+  -webkit-backface-visibility:hidden;backface-visibility:hidden;
 }
-html.js .mag.dragging .track,
-html.js .mag.dragging .page{transition:none!important}
-
-/* sombra progresiva del pliego durante el volteo (un canto oscuro por lado) */
-.turn-shade,.turn-shade--r{
+html.js .leaf-back{
+  transform:rotateY(180deg);
+  background:var(--paper);
+  pointer-events:none;
+  display:flex;align-items:center;justify-content:center;
+}
+.leaf-back::before{
+  content:"";position:absolute;inset:16px;
+  border:1px solid rgba(25,21,17,.14);
+}
+.leaf-back .back-xv{
+  font-family:var(--serif);font-weight:900;line-height:1;
+  font-size:clamp(110px,30vw,230px);
+  color:rgba(194,94,122,.15);
+}
+.leaf-back .back-folio{
+  position:absolute;left:0;right:0;bottom:36px;text-align:center;
+  font-size:9px;font-weight:600;letter-spacing:.3em;text-transform:uppercase;
+  color:rgba(25,21,17,.42);
+}
+/* sombras dinámicas del pliegue (canto oscuro según el ángulo de giro) */
+.shade-f,.shade-b{
   position:absolute;inset:0;z-index:12;pointer-events:none;opacity:0;
-  transition:opacity .45s ease;
 }
-.turn-shade{background:linear-gradient(90deg,rgba(12,9,6,.8),rgba(12,9,6,0) 72%)}
-.turn-shade--r{background:linear-gradient(270deg,rgba(12,9,6,.8),rgba(12,9,6,0) 72%)}
+.shade-f{background:linear-gradient(90deg,rgba(12,9,6,.85),rgba(12,9,6,0) 62%)}
+.shade-b{background:linear-gradient(270deg,rgba(12,9,6,.8),rgba(12,9,6,0) 62%)}
 
-/* la perspectiva vive en el transform de cada hoja (punto de fuga propio,
-   no en el track: su origin quedaría fuera de pantalla y anularía el 3D).
-   El scale leve al girar hace visible el levantamiento en páginas a
-   pantalla completa (sin él, la silueta no cambia y el giro no se lee). */
-@keyframes turn-out-fwd{from{transform:perspective(1200px) rotateY(0deg) scale(1)}to{transform:perspective(1200px) rotateY(-44deg) scale(.9)}}
-@keyframes turn-in-fwd{from{transform:perspective(1200px) rotateY(34deg) scale(.95)}to{transform:perspective(1200px) rotateY(0deg) scale(1)}}
-@keyframes turn-out-prev{from{transform:perspective(1200px) rotateY(0deg) scale(1)}to{transform:perspective(1200px) rotateY(44deg) scale(.9)}}
-@keyframes turn-in-prev{from{transform:perspective(1200px) rotateY(-34deg) scale(.95)}to{transform:perspective(1200px) rotateY(0deg) scale(1)}}
-@keyframes shade-in-out{0%{opacity:0}45%{opacity:.75}100%{opacity:0}}
-html.js .track.turn-fwd .page.is-leaving{transform-origin:left center;animation:turn-out-fwd .68s var(--ease-folio) forwards}
-html.js .track.turn-fwd .page.is-entering{transform-origin:left center;animation:turn-in-fwd .68s var(--ease-folio) forwards}
-html.js .track.turn-prev .page.is-leaving{transform-origin:right center;animation:turn-out-prev .68s var(--ease-folio) forwards}
-html.js .track.turn-prev .page.is-entering{transform-origin:right center;animation:turn-in-prev .68s var(--ease-folio) forwards}
-html.js .track.turn-fwd .page.is-leaving .turn-shade,
-html.js .track.turn-fwd .page.is-entering .turn-shade,
-html.js .track.turn-prev .page.is-leaving .turn-shade{animation:shade-in-out .68s ease forwards}
-html.js .track.turn-prev .page.is-entering .turn-shade--r{animation:shade-in-out .68s ease forwards}
+/* volteo físico (botones/bordes/teclado/rueda). El lomo vive en el borde
+   izquierdo del viewport: de la rotación real 0→-180° la porción visible
+   es 0→~94° — la hoja barre la pantalla hacia el lomo con perspectiva y
+   se apaga al pasar el pliegue; al retroceder se despliega del lomo
+   cubriendo la vista, como una hoja que vuelve de la pila. */
+@keyframes flip-out{
+  0%{transform:translateZ(1px) rotateY(0deg);opacity:1}
+  80%{opacity:1}
+  100%{transform:translateZ(1px) rotateY(-94deg);opacity:0}
+}
+@keyframes flip-in{
+  0%{transform:translateZ(1px) rotateY(-94deg);opacity:0}
+  20%{opacity:1}
+  100%{transform:translateZ(1px) rotateY(0deg);opacity:1}
+}
+@keyframes shade-front{0%{opacity:0}100%{opacity:.52}}
+@keyframes shade-front-return{0%{opacity:.52}100%{opacity:0}}
+@keyframes shade-under{0%{opacity:0}35%{opacity:.3}75%{opacity:.3}100%{opacity:0}}
+html.js .track.turning.turn-fwd .page.flipping{animation:flip-out .82s var(--ease-flip) forwards}
+html.js .track.turning.turn-prev .page.flipping{animation:flip-in .82s var(--ease-flip) forwards}
+html.js .track.turning .page.flipping .shade-f{animation:shade-front .82s linear forwards}
+html.js .track.turning.turn-prev .page.flipping .shade-f{animation:shade-front-return .82s linear forwards}
+/* la sombra proyectada cae junto al canto libre de la hoja (el pliegue
+   móvil), no en el lomo: viñeta oscura desde la derecha de la revelada */
+html.js .track.turning .page.under .shade-b{animation:shade-under .82s linear forwards}
 
 /* pliego: sombra sutil en el doblez + página inactiva levemente baja */
 .page::before{
@@ -403,11 +443,8 @@ html.js .hint{display:block}
 /* movimiento reducido: paso instantáneo, sin giro ni sombras animadas */
 @media (prefers-reduced-motion:reduce){
   html.js .track,html.js .page,html.js .page-inner{transition:none}
-  html.js .track.turn-fwd .page.is-leaving,
-  html.js .track.turn-fwd .page.is-entering,
-  html.js .track.turn-prev .page.is-leaving,
-  html.js .track.turn-prev .page.is-entering{animation:none!important}
-  .turn-shade,.turn-shade--r{transition:none;animation:none!important}
+  html.js .track.turning .page.flipping{animation:none!important}
+  .shade-f,.shade-b{animation:none!important}
   html.js .reveal{opacity:1;transform:none;transition:none}
   .hint{animation:none!important}
 }
@@ -603,7 +640,7 @@ html.js .hint{display:block}
           </div>
           <div class="colophon reveal">
             <span>Revista XV · Lookbook</span>
-            <span>Prototipo lumengala 045c</span>
+            <span>Prototipo lumengala 045d</span>
           </div>
         </div>
       </div>
@@ -654,10 +691,19 @@ const pad = n => String(n).padStart(2, "0");
 let idx = 0;
 const REDUCED = !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
 
-/* sombras progresivas dentro de cada página (un canto oscuro por lado) */
+/* lámina 3D por página: el contenido pasa a la cara frontal y se agrega
+   un dorso limpio de papel — el frente jamás se ve en espejo al girar */
 pages.forEach(p => {
-  p.insertAdjacentHTML("beforeend",
-    '<div class="turn-shade" aria-hidden="true"></div><div class="turn-shade--r" aria-hidden="true"></div>');
+  const front = document.createElement("div");
+  front.className = "leaf-front";
+  while (p.firstChild) front.appendChild(p.firstChild);
+  front.insertAdjacentHTML("beforeend", '<div class="shade-f" aria-hidden="true"></div>');
+  const back = document.createElement("div");
+  back.className = "leaf-back";
+  back.setAttribute("aria-hidden", "true");
+  back.innerHTML = '<span class="back-xv">XV</span><span class="back-folio">Lucía · Revista XV</span><div class="shade-b" aria-hidden="true"></div>';
+  p.appendChild(front);
+  p.appendChild(back);
 });
 
 function activate(i) {
@@ -676,39 +722,52 @@ function activate(i) {
     }
   });
 }
+function syncPager(ni) {
+  elCur.textContent = pad(ni + 1);
+  elPrev.disabled = ni === 0;
+  elNext.disabled = ni === N - 1;
+  if (hint && ni > 0) hint.classList.add("off");
+}
 function setIdx(i, force) {
   const ni = Math.max(0, Math.min(N - 1, i));
-  if (ni === idx && !force) { track.style.transform = `translateX(${-idx * 100}%)`; return; }
+  if (ni === idx && !force) return;
   idx = ni;
-  track.style.transform = `translateX(${-idx * 100}%)`;
-  elCur.textContent = pad(idx + 1);
-  elPrev.disabled = idx === 0;
-  elNext.disabled = idx === N - 1;
-  if (hint && idx > 0) hint.classList.add("off");
-  activate(idx);
+  syncPager(ni);
+  activate(ni);
 }
 
-/* volteo por clases: botones, bordes, teclado y rueda */
+/* volteo físico por clases: botones, bordes, teclado y rueda */
+const DUR = 880;
 let turnTimer = null;
-function playTurn(to, dir) {
-  if (REDUCED) return;
-  track.classList.remove("turn-fwd", "turn-prev");
-  pages.forEach(p => p.classList.remove("is-leaving", "is-entering"));
-  void track.offsetWidth;                 // reinicia la animación si acaba de correr
-  track.classList.add(dir === "fwd" ? "turn-fwd" : "turn-prev");
-  pages[idx].classList.add("is-leaving");
-  pages[to].classList.add("is-entering");
+function clearTurnClasses() {
+  track.classList.remove("turning", "turn-fwd", "turn-prev");
+  pages.forEach(p => p.classList.remove("flipping", "under"));
+}
+function startTurn(ni, dir) {
   clearTimeout(turnTimer);
+  clearTurnClasses();
+  void track.offsetWidth;              // reinicia la animación si acaba de correr
+  const leaf = dir === "fwd" ? pages[idx] : pages[ni];   // hoja que gira
+  const flat = dir === "fwd" ? pages[ni] : pages[idx];   // hoja quieta debajo
+  track.classList.add("turning", dir === "fwd" ? "turn-fwd" : "turn-prev");
+  leaf.classList.add("flipping");
+  flat.classList.add("under");
   turnTimer = setTimeout(() => {
-    track.classList.remove("turn-fwd", "turn-prev");
-    pages.forEach(p => p.classList.remove("is-leaving", "is-entering"));
-  }, 740);
+    clearTurnClasses();
+    if (dir === "prev") activate(ni);  // la hoja cubrió la vista: pasa a ser la activa
+    leaf.style.transform = "";
+    flat.style.transform = "";
+  }, DUR);
 }
 function go(i) {
   const ni = Math.max(0, Math.min(N - 1, i));
   if (ni === idx) return;
-  playTurn(ni, ni > idx ? "fwd" : "prev");
-  setIdx(ni);
+  const dir = ni > idx ? "fwd" : "prev";
+  if (REDUCED) { idx = ni; syncPager(ni); activate(ni); return; }
+  startTurn(ni, dir);
+  idx = ni;
+  syncPager(ni);
+  if (dir === "fwd") activate(ni);     // la revelada ya queda activa debajo
 }
 const next = () => go(idx + 1);
 const prev = () => go(idx - 1);
@@ -718,37 +777,61 @@ document.querySelector(".edge--r").addEventListener("click", next);
 document.querySelector(".edge--l").addEventListener("click", prev);
 setIdx(0, true);
 
-/* --- 2. Arrastre con volteo en vivo ---
+/* --- 2. Arrastre con volteo físico ---
    Touch por Touch Events: apenas el gesto gana el eje horizontal se hace
    preventDefault, así ningún navegador se apropia del gesto ni lanza
-   touchcancel — el swipe funciona igual en las 6 páginas, también sobre
-   enlaces/botones (tap vs. arrastre desambiguado) y con flick rápido por
-   velocidad. El eje vertical queda nativo para el scroll interno si una
-   página desborda. Mouse por PointerEvents con captura de puntero. */
+   touchcancel — la hoja gira en vivo siguiendo al dedo en las 6 páginas,
+   también sobre enlaces/botones (tap vs. arrastre desambiguado) y con
+   flick rápido por velocidad. Mouse por PointerEvents con captura. */
 let sx = 0, sy = 0, dx = 0, axis = null, down = false, suppressClick = false;
 let lastX = 0, lastT = 0, vel = 0;
+let dragLeaf = null, dragFlat = null, dragDir = 0, dragTimer = null;
 const CAMPO = "input,textarea,select";
+const ANG = 94;                        // alcance visible del giro (0→-94°)
 
-function clearDragStyles() {
-  pages.forEach(p => { p.style.transform = ""; p.style.transformOrigin = ""; });
-  mag.querySelectorAll(".turn-shade, .turn-shade--r").forEach(s => { s.style.opacity = ""; });
+function dragSetup(dir) {              // dir: -1 avanza · 1 retrocede
+  if (dragDir === dir) return;
+  dragTeardown();
+  dragDir = dir;
+  dragLeaf = dir < 0 ? pages[idx] : (idx > 0 ? pages[idx - 1] : null);
+  dragFlat = dir < 0 ? (idx + 1 < N ? pages[idx + 1] : null) : pages[idx];
+  if (dragLeaf) dragLeaf.classList.add("flipping");
+  if (dragFlat) dragFlat.classList.add("under");
 }
-/* el pliego responde al dedo: la hoja actual se levanta, la vecina se asienta */
-function dragVisuals(p) {               // p = dx / ancho, ∈ [-1, 1]
-  const cur = pages[idx];
-  const fwd = p < 0;
-  const a = Math.abs(p);
-  cur.style.transformOrigin = fwd ? "left center" : "right center";
-  cur.style.transform = `perspective(1200px) rotateY(${(fwd ? -44 : 44) * a}deg) scale(${1 - .1 * a})`;
-  const shOut = cur.querySelector(".turn-shade");
-  if (shOut) shOut.style.opacity = Math.min(.8, a * 1.3);
-  const ni = idx + (fwd ? 1 : -1);
-  if (ni >= 0 && ni < N) {
-    const vec = pages[ni];
-    vec.style.transformOrigin = fwd ? "left center" : "right center";
-    vec.style.transform = `perspective(1200px) rotateY(${(fwd ? 34 : -34) * (1 - a)}deg) scale(${1 - .05 * (1 - a)})`;
-    const shIn = vec.querySelector(fwd ? ".turn-shade" : ".turn-shade--r");
-    if (shIn) shIn.style.opacity = Math.min(.55, (1 - a) * .7);
+function dragTeardown() {
+  if (dragLeaf) dragLeaf.classList.remove("flipping");
+  if (dragFlat) dragFlat.classList.remove("under");
+  pages.forEach(p => { p.style.transform = ""; p.style.opacity = ""; });
+  mag.querySelectorAll(".shade-f").forEach(s => { s.style.opacity = ""; });
+  dragLeaf = null; dragFlat = null; dragDir = 0;
+}
+function fadePorAngulo(a) {            // la hoja se apaga al pasar el lomo
+  return Math.max(0, Math.min(1, (ANG - Math.abs(a)) / (ANG * .3)));
+}
+/* la hoja obedece al dedo: 0→-94° al avanzar, -94°→0 al retroceder */
+function flipVisuals(d) {              // d ya amortiguado por la goma
+  const w = mag.clientWidth || 1;
+  const p = Math.max(-1, Math.min(1, d / w));
+  if (p < -.02 && idx + 1 < N) {
+    dragSetup(-1);
+    const a = ANG * p;
+    dragLeaf.style.transform = `translateZ(1px) rotateY(${a}deg)`;
+    dragLeaf.style.opacity = String(fadePorAngulo(a));
+    const f = dragLeaf.querySelector(".shade-f");
+    if (f) f.style.opacity = String(.52 * Math.min(1, Math.abs(a) / ANG));
+  } else if (p > .02 && idx > 0) {
+    dragSetup(1);
+    const a = -ANG * (1 - p);
+    dragLeaf.style.transform = `translateZ(1px) rotateY(${a}deg)`;
+    dragLeaf.style.opacity = String(fadePorAngulo(a));
+    const f = dragLeaf.querySelector(".shade-f");
+    if (f) f.style.opacity = String(.52 * Math.abs(a) / ANG);
+  } else if (dragDir !== 0 && Math.abs(p) <= .02) {
+    dragTeardown();                    // micro-gesto: todo vuelve al reposo
+  }
+  if (dragFlat) {
+    const f = dragFlat.querySelector(".shade-b");
+    if (f) f.style.opacity = String(.34 * Math.abs(p) * (1 - Math.abs(p)) * 3.4);
   }
 }
 function medirVelocidad(x) {
@@ -756,12 +839,14 @@ function medirVelocidad(x) {
   if (dt > 0) vel = (x - lastX) / dt;
   lastX = x; lastT = now;
 }
-function goma(d) {                      // resistencia en los extremos
+function goma(d) {                     // resistencia en los extremos
   return (idx === 0 && d > 0) || (idx === N - 1 && d < 0) ? d * .35 : d;
 }
 function decidirCommit() {
   if (axis !== "x") return 0;
   const w = mag.clientWidth;
+  if (dx <= -w * .5) return -1;                              // pasado el medio: completar el giro
+  if (dx >= w * .5) return 1;
   const umbral = Math.max(w * .18, 56);
   if (dx < -umbral || (dx < -24 && vel < -.45)) return -1;   // siguiente (flick incl.)
   if (dx > umbral || (dx > 24 && vel > .45)) return 1;       // anterior
@@ -771,37 +856,53 @@ function endDrag(commit) {
   if (!down) return;
   down = false;
   mag.classList.remove("dragging");
-  void mag.offsetWidth;                 // las transiciones vuelven a estar vivas
-  track.style.transition = "";
+  void mag.offsetWidth;                  // las transiciones vuelven a estar vivas
   if (REDUCED) {
-    clearDragStyles();
-    track.style.transform = `translateX(${-idx * 100}%)`;
-  } else if (axis === "x") {
+    dragTeardown();
     if (commit !== 0) {
-      const fwd = commit < 0, from = idx;
-      const to = Math.max(0, Math.min(N - 1, idx - commit));
-      if (to !== from) {
-        pages[from].style.transformOrigin = fwd ? "left center" : "right center";
-        pages[from].style.transform = `perspective(1200px) rotateY(${fwd ? -44 : 44}deg) scale(.9)`;
-        pages[to].style.transformOrigin = fwd ? "left center" : "right center";
-        pages[to].style.transform = "perspective(1200px) rotateY(0deg) scale(1)";
-        const shOut = pages[from].querySelector(".turn-shade");
-        if (shOut) shOut.style.opacity = ".75";
-      } else {
-        // en el borde de la revista: la hoja vuelve a asentarse, sin volteo
-        pages[from].style.transform = "perspective(1200px) rotateY(0deg) scale(1)";
-        track.style.transform = `translateX(${-idx * 100}%)`;
+      const ni = Math.max(0, Math.min(N - 1, idx - commit));
+      if (ni !== idx) {
+        suppressClick = true;
+        setTimeout(() => { suppressClick = false; }, 90);
+        idx = ni; syncPager(ni); activate(ni);
       }
-    } else {
-      pages.forEach((p, k) => { if (Math.abs(k - idx) <= 1) p.style.transform = "perspective(1200px) rotateY(0deg) scale(1)"; });
-      track.style.transform = `translateX(${-idx * 100}%)`;
+    }
+    dx = 0; axis = null; return;
+  }
+  clearTimeout(dragTimer);
+  if (axis === "x" && commit !== 0) {
+    const ni = Math.max(0, Math.min(N - 1, idx - commit));
+    if (ni !== idx && dragLeaf) {
+      suppressClick = true;
+      setTimeout(() => { suppressClick = false; }, 90);
+      if (commit < 0) {
+        // la hoja actual termina su giro y se apaga tras el lomo
+        dragLeaf.style.transform = `translateZ(1px) rotateY(-${ANG}deg)`;
+        dragLeaf.style.opacity = "0";
+        idx = ni; syncPager(ni); activate(ni);   // la revelada queda activa debajo
+        dragTimer = setTimeout(dragTeardown, 620);
+      } else {
+        // la hoja anterior termina de cubrir la vista
+        dragLeaf.style.transform = "translateZ(1px) rotateY(0deg)";
+        dragLeaf.style.opacity = "1";
+        idx = ni; syncPager(ni);
+        dragTimer = setTimeout(() => { dragTeardown(); activate(ni); }, 620);
+      }
+      dx = 0; axis = null; return;
     }
   }
-  setTimeout(clearDragStyles, 780);
-  if (commit !== 0) {
-    suppressClick = true;
-    setTimeout(() => { suppressClick = false; }, 90);
-    setIdx(idx - commit);
+  // sin commit o en el borde de la revista: la hoja vuelve a su reposo
+  if (axis === "x" && dragLeaf) {
+    if (dragDir < 0) {
+      dragLeaf.style.transform = "translateZ(1px) rotateY(0deg)";
+      dragLeaf.style.opacity = "1";
+    } else {
+      dragLeaf.style.transform = `translateZ(1px) rotateY(-${ANG}deg)`;
+      dragLeaf.style.opacity = "0";
+    }
+    dragTimer = setTimeout(dragTeardown, 640);
+  } else {
+    dragTeardown();
   }
   dx = 0; axis = null;
 }
@@ -813,7 +914,6 @@ mag.addEventListener("touchstart", e => {
   down = true; axis = null; dx = 0; vel = 0;
   sx = t.clientX; sy = t.clientY;
   lastX = sx; lastT = performance.now();
-  track.style.transition = "none";
   mag.classList.add("dragging");
 }, { passive: true });
 mag.addEventListener("touchmove", e => {
@@ -830,8 +930,7 @@ mag.addEventListener("touchmove", e => {
     e.preventDefault();
     medirVelocidad(t.clientX);
     const d = goma(dx);
-    track.style.transform = `translateX(calc(${-idx * 100}% + ${d}px))`;
-    if (!REDUCED) dragVisuals(d / mag.clientWidth);
+    if (!REDUCED) flipVisuals(d);
   }
 }, { passive: false });
 mag.addEventListener("touchend", () => endDrag(decidirCommit()));
@@ -843,7 +942,6 @@ mag.addEventListener("pointerdown", e => {
   down = true; axis = null; dx = 0; vel = 0;
   sx = e.clientX; sy = e.clientY;
   lastX = sx; lastT = performance.now();
-  track.style.transition = "none";
   mag.classList.add("dragging");
   try { mag.setPointerCapture(e.pointerId); } catch (_) {}
 });
@@ -858,8 +956,7 @@ mag.addEventListener("pointermove", e => {
   if (axis === "x") {
     medirVelocidad(e.clientX);
     const d = goma(dx);
-    track.style.transform = `translateX(calc(${-idx * 100}% + ${d}px))`;
-    if (!REDUCED) dragVisuals(d / mag.clientWidth);
+    if (!REDUCED) flipVisuals(d);
   }
 });
 mag.addEventListener("pointerup", e => {

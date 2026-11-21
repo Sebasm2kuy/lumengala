@@ -320,3 +320,54 @@ Registro de trabajo del repo aislado de diseño. La producción real
 - Verificado: 2 swipes atrás fuertes en 01 y 6 adelante con la última
   fuerte en 06 — sin errores nuevos en consola, estado consistente
   (`translateX(0%)`, paginador y botones deshabilitados correctos).
+
+## 2026-11-21 · Iteración 045d — «Revista XV»: volteo físico de hoja (page flip de libro)
+
+- **Pedido:** la transición de 045c (giro leve + levantamiento) no se leía
+  como una hoja física. Objetivo: volteo auténtico de revista.
+- **Modelo libro (reescritura del motor):** el track deja de ser un flex
+  deslizante y pasa a ser el contenedor del libro con `perspective:
+  1800px` + `transform-style: preserve-3d`; las 6 páginas se apilan
+  absolutas y cada una se convierte en una **lámina de dos caras** (JS
+  re-envuelve el contenido en `.leaf-front` con `backface-visibility:
+  hidden` y agrega `.leaf-back`: dorso limpio papel editorial con «XV»
+  fantasma, filo hairline y folio «Lucía · Revista XV»). El contenido
+  jamás se ve en espejo. La hoja girando queda por encima (`.flipping`
+  z-index 6, además de translateZ(1px) por orden por profundidad) y la
+  siguiente se posiciona debajo (`.under`), visible.
+- **Giro real desde el lomo:** `transform-origin: left center`,
+  `rotateY` 0→-94° al avanzar y -94°→0 al volver. Nota de física
+  documentada: con el lomo en el borde izquierdo y páginas a pantalla
+  completa, la porción **visible** de un giro real de 180° es 0→~90°
+  (pasado el pliegue la hoja queda fuera del viewport, proyectada a la
+  izquierda del lomo); el rango se lleva a 94° con desvanecido en el
+  tramo final para completar el gesto sin tiempo muerto — al retroceder
+  la hoja se despliega del lomo cubriendo la vista, como en un libro.
+- **Sombras dinámicas de pliegue:** la hoja se apaga al girar
+  (`.shade-f` canto del lomo, 0→.52) y **proyecta viñeta sobre la página
+  revelada junto a su canto libre** (`.shade-b` desde la derecha, pico
+  ~.3) — hallazgo del VLM: la sombra en el lomo caía oscuro-sobre-oscuro
+  y era invisible; la física pide la sombra junto al pliegue móvil.
+- **Dos caminos de animación:** botones/bordes/teclado/rueda vía
+  keyframes (`flip-out`/`flip-in` + sombras, .82s, limpieza a 880ms,
+  clases `turning`/`turn-fwd`/`turn-prev` + `flipping`/`under`);
+  arrastre con la hoja **obedeciendo al dedo** (ángulo = -94°·dx/ancho,
+  opacidad y sombras proporcionales) y settle por transición (.56s) al
+  soltar: pasado el medio del ancho (o flick) se completa el giro, antes
+  vuelve al reposo; extremos seguros (goma + clamp, sin TypeError).
+  Coreografía de visibilidad explícita: solo `.active`, `.flipping` y
+  `.under` son visibles; en «prev» la activa no cambia hasta que la hoja
+  la cubre. `prefers-reduced-motion` respetado en CSS y JS (paso
+  instantáneo).
+- Calidad: lint 0 · typecheck 0 · 13/13 tests · build EXIT=0. E2E
+  (375×667 y 1440×900): volteo por botón con matrix3d en pleno vuelo y
+  limpieza correcta; encadenado táctil 01→06 y 06→01→02; la hoja sigue
+  al dedo (rotateY ≈ -25° con el dedo al 27%); flick y sobre-gestos en
+  ambos extremos sin errores; teclado/bordes/paginador; drag que nace
+  sobre el botón de mapa voltea sin abrir el enlace; una sola hoja
+  visible en reposo; fits intactos; consola sin errores nuevos.
+  Revisión visual VLM del frame a mitad de volteo (con sombras): **GOOD,
+  flip_visible true** — giro legible, revelado correcto, sombra de
+  pliegue en el canto móvil, sin texto en espejo.
+- Ciclo git: rama 045d-flip-real → PR #13 → escaneo anti-fugas → merge →
+  deploy Pages → verificación en vivo.
