@@ -59,6 +59,40 @@ ritmo, jerarquía y respiro visual en celular y escritorio.
   confirma en pantalla con `localStorage`: pendientes de evento real y
   backend antes de producción. `noindex` por coherencia con este repo.
 
+## Prototipo Escena XV · Explorable (046a)
+
+**Tercera arquitectura insignia**: una invitación de XV editada como una
+**escena explorable en 3D** (`public/escena-xv.html`). El invitado no lee
+una página: mira alrededor de un jardín de gala nocturno — cielo con luna
+y estrellas, resplandor cálido en el horizonte, silueta del bosque, arco
+con guirnalda de luces, mesa de honor con candelabro y follaje
+enmarcando — y **descubre los datos de la fiesta tocando cinco
+destellos** integrados en el entorno: la fecha (con cuenta regresiva
+tipográfica), el lugar (mapa + calendario), el código de vestimenta, la
+carta de Lucía y el atril de confirmación (RSVP local + WhatsApp).
+
+- **Profundidad 3D real:** escenario con `perspective: 1200px` +
+  `transform-style: preserve-3d`; seis capas a profundidades distintas
+  (`translateZ` con compensación de escala) que el escenario inclina con
+  `rotateY/rotateX`. El parallax se alimenta del cursor (escritorio),
+  del **arrastre táctil** ("mirar alrededor"), del **giroscopio**
+  opcional (botón *Inclinar*, con permiso iOS) y de las flechas del
+  teclado; un bucle rAF interpola todo hacia el mismo objetivo.
+- **Descubrimiento:** contador `0 / 5 descubiertos` (aria-live),
+  focos con pulso y etiqueta elegante que pasan a rosa fijo al
+  descubrirse, línea final de celebración al completar los cinco, y
+  **índice rápido** discreto para abrir cualquier dato en cualquier
+  dispositivo.
+- **Identidad Lumen Gala:** tinta nocturna + rosa + dorado, Playfair
+  Display + Archivo; sin fotos de vestido de XV y sin textos de
+  ejemplo. Sin JS, la escena se degrada a una lista editorial legible.
+  `prefers-reduced-motion`: parallax y partículas quietas, paso
+  directo.
+
+En la galería (vista [XV Años]) vive junto a Edición Crónica y Revista
+XV · Lookbook con una miniatura compuesta que reproduce la mini-escena
+(arco, guirnalda, velas y destellos) — sin inventar imágenes.
+
 ## Prototipo Revista XV · Lookbook (045a → 045d)
 
 Segunda arquitectura distinta: una invitación de **15 años editada como una
