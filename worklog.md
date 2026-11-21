@@ -134,9 +134,15 @@ Registro de trabajo del repo aislado de diseño. La producción real
   escritorio.
 - Integración mínima: archivo autocontenido `public/edicion-cronica.html`
   (HTML+CSS+JS inline, sin build) que el export copia tal cual; sirve en
-  https://sebasm2kuy.github.io/lumengala/edicion-cronica.html y queda
-  enlazado desde la nota de cierre de la galería de colecciones con
-  `rutaPublica()` (respeta basePath). La landing no cambia de estructura.
+  https://sebasm2kuy.github.io/lumengala/edicion-cronica.html. La landing no
+  cambia de estructura. Ubicación del acceso (ajuste de 044f): vive en la
+  vista [Bodas] de la galería de colecciones como tarjeta prototipo con
+  portada tipográfica propia (papel/tinta/terracota, índice de capítulos en
+  romanos, hover «Abrir el prototipo» reutilizando marco-obra/velo-obra),
+  construida con `rutaPublica()` (respeta basePath). El enlace original del
+  pie de galería se retiró. La tarjeta está FUERA del catálogo COLECCIONES
+  a propósito: los tests fijan 6 colecciones que enlazan demos de
+  producción, y el prototipo no es una colección.
 - Lineamientos cumplidos: apertura limpia (cero porcentajes en carga, velo
   de papel + entrada escalonada, contenido visible sin JS gracias al gating
   `html.js` de los revelados); cuenta regresiva tipográfica en vivo sin

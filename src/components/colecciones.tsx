@@ -126,29 +126,85 @@ export default function Colecciones() {
               </figcaption>
             </figure>
           ))}
+
+          {/* Acceso al prototipo de arquitectura (044f), pedido como acceso
+              en la sección Bodas: una "obra" extra solo en la vista [Bodas].
+              Está FUERA del catálogo COLECCIONES a propósito — el museo
+              publica 6 colecciones que enlazan demos de producción (los
+              tests lo fijan); el prototipo vive en public/ de este repo de
+              prueba y no es una colección. Portada tipográfica con la
+              identidad editorial del prototipo (papel, tinta, terracota). */}
+          {filtro === "boda" && (
+            <figure
+              className="grupo-obra obra-entrante group"
+              style={{ animationDelay: `${obras.length * 70}ms` }}
+            >
+              <a
+                href={rutaPublica("/edicion-cronica.html")}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Abrir el prototipo Edición Crónica: invitación narrativa por capítulos (abre en una pestaña nueva)"
+              >
+                <div className="marco-obra">
+                  <div className="relative aspect-[4/5] overflow-hidden rounded-[3px] bg-[#F7F2E9]">
+                    {/* portada tipográfica, sin foto: el prototipo aún no
+                        tiene shoot propio */}
+                    <div className="absolute inset-0 flex flex-col justify-between p-5 text-left sm:p-6">
+                      <p className="text-[8.5px] font-semibold uppercase tracking-[0.3em] text-[#A4502A]">
+                        Prototipo · Próxima arquitectura
+                      </p>
+                      <div>
+                        <p className="font-serif text-[27px] italic leading-tight text-[#211B13] sm:text-[31px]">
+                          Edición Crónica
+                        </p>
+                        <p className="mt-1 text-[9px] uppercase tracking-[0.24em] text-[#211B13]/60">
+                          La invitación, contada por capítulos
+                        </p>
+                      </div>
+                      <ol
+                        className="space-y-1.5 text-[9.5px] uppercase tracking-[0.18em] text-[#211B13]/70"
+                        aria-label="Capítulos del prototipo"
+                      >
+                        <li>I · El anuncio</li>
+                        <li>II · Lugar y fecha</li>
+                        <li>III · La galería</li>
+                        <li>IV · Los detalles</li>
+                        <li>V · RSVP</li>
+                      </ol>
+                      <p className="text-[8px] uppercase tracking-[0.3em] text-[#A4502A]/80">
+                        Núm. 01 · Valentina &amp; Mateo
+                      </p>
+                    </div>
+                    {/* velo + etiqueta al hover (o al enfocar con teclado),
+                        igual que las obras */}
+                    <div className="velo-obra absolute inset-0 flex items-center justify-center bg-gradient-to-t from-[#2b2620]/72 via-[#2b2620]/10 to-transparent">
+                      <span className="boton-obra brillo inline-flex items-center gap-2 rounded-full bg-gradient-to-b from-[#e6c96f] to-[#c39b2a] px-5 py-2.5 text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[#241d10] shadow-[0_16px_34px_-12px_rgba(212,175,55,0.9)]">
+                        <Eye className="h-4 w-4" aria-hidden="true" />
+                        Abrir el prototipo
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </a>
+              <figcaption className="mt-4 text-center">
+                <p className="font-serif text-[22px] italic leading-tight text-tinta">
+                  Edición Crónica
+                </p>
+                <p className="mt-1 text-[9.5px] uppercase tracking-[0.28em] text-tinta-suave">
+                  Prototipo · no es una colección
+                </p>
+                <p className="mx-auto mt-1.5 max-w-[260px] text-[12px] leading-relaxed text-tinta-media">
+                  Nuestra primera arquitectura narrativa por capítulos,
+                  distinta de la lista vertical clásica.
+                </p>
+              </figcaption>
+            </figure>
+          )}
         </div>
 
         <p className="mt-12 text-center text-[12px] leading-relaxed text-tinta-suave">
           Cada obra abre una invitación de demostración publicada en
           lumengala.site — este repositorio de prueba solo la enlaza.
-        </p>
-
-        {/* Prototipo de arquitectura (iteración 044f): la primera invitación
-            con estructura distinta de las plantillas clásicas — narrativa por
-            capítulos. Vive como archivo autocontenido en public/ y se prueba
-            aparte de las demos de producción. */}
-        <p className="mt-6 text-center text-[12px] leading-relaxed text-tinta-suave">
-          ¿Cómo se siente la próxima arquitectura? Probá el prototipo{" "}
-          <a
-            href={rutaPublica("/edicion-cronica.html")}
-            className="font-medium text-dorado-hondo underline decoration-dorado/50 underline-offset-4 transition-colors hover:text-tinta"
-            aria-label="Abrir el prototipo Edición Crónica: invitación narrativa por capítulos"
-          >
-            Edición Crónica
-          </a>{" "}
-          — una invitación narrativa por capítulos (Prólogo → Anuncio → Lugar →
-          Galería → Detalles → RSVP), la primera estructura que se aparta de la
-          lista vertical clásica.
         </p>
       </div>
     </section>

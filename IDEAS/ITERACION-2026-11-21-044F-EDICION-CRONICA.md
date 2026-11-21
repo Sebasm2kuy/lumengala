@@ -63,9 +63,16 @@ de prueba para probarlo en el celular antes de llevarlo a producción.
   autocontenido en `public/edicion-cronica.html` (HTML+CSS+JS inline, sin
   build). El export estático lo copia tal cual a `out/`, sirve en
   `/lumengala/edicion-cronica.html` (con basePath) y no toca el stack ni la
-  estructura de la landing. El único cambio en la app es el enlace de
-  presentación dentro de la nota de cierre de la galería de colecciones,
-  construido con el helper `rutaPublica()` para respetar basePath.
+  estructura de la landing. El acceso, a pedido del estudio, está en la
+  **vista [Bodas] de la galería de colecciones**: una tarjeta prototipo con
+  portada tipográfica propia (papel marfil, tinta, terracota; índice de
+  capítulos en romanos; hover «Abrir el prototipo») que reutiliza el
+  lenguaje del museo (`marco-obra`, `velo-obra`, `boton-obra`) y el helper
+  `rutaPublica()` para basePath. La tarjeta se renderiza en el componente,
+  **fuera del catálogo `COLECCIONES`**: los tests fijan 6 colecciones cuyas
+  URLs son siempre demos de producción, y el prototipo no es una colección
+  (no tiene shoot ni URL en lumengala.site). El enlace que estaba en la nota
+  de cierre de la galería se retiró para no duplicar accesos.
 - **Contenido parametrizado:** el bloque `CONFIG` al final del `<script>`
   concentra la fecha del evento (alimenta la cuenta regresiva) y el enlace
   de WhatsApp; el resto de los textos son muestra editorial (Valentina &
