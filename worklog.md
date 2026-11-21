@@ -306,3 +306,17 @@ Registro de trabajo del repo aislado de diseño. La producción real
   volteo (móvil + escritorio): GOOD con giro y sombra de pliego legibles.
 - Ciclo git: rama 045c-volteo-swipe -> PR #11 -> escaneo anti-fugas ->
   merge -> deploy Pages -> verificación en vivo.
+
+### 2026-11-21 · Hotfix 045c — swipes fuertes en los extremos de la revista
+
+- El E2E en vivo cazó lo que la regresión local había dejado pasar: un
+  swipe que excede el límite (atrás fuerte en la 01 / adelante fuerte en
+  la 06) calculaba `pages[-1]` o `pages[6]` en `endDrag` → TypeError
+  antes de `setIdx` (la página no cambiaba, pero sonaba en consola y se
+  perdía la supresión del clic fantasma). La goma amortiguaba el visual
+  pero no la decisión de commit.
+- Fix: `to` acotado a `[0, N-1]`; cuando el commit no mueve de página,
+  la hoja se asienta de nuevo (sin volteo) y se suprime el clic igual.
+- Verificado: 2 swipes atrás fuertes en 01 y 6 adelante con la última
+  fuerte en 06 — sin errores nuevos en consola, estado consistente
+  (`translateX(0%)`, paginador y botones deshabilitados correctos).

@@ -72,6 +72,12 @@ con `commit=-1` (adelante) apuntaba a `pages[-1]` → TypeError en
 se quería arreglar, ahora por otra causa). Corregido a `idx - commit`;
 el repro sintético con TouchEvents lo atrapó en el primer intento.
 
+## Hotfix posterior al deploy
+
+Detectado y corregido tras el deploy (ver worklog): swipes fuertes en
+los extremos lanzaban TypeError por índice fuera de rango; `to` ahora se
+acota y el caso se trata como rebote sin volteo.
+
 ## Verificación
 
 - Gates: lint 0 · typecheck 0 · 13/13 tests · build EXIT=0 (basePath).
