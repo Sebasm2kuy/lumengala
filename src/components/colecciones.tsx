@@ -342,124 +342,137 @@ export default function Colecciones() {
             </figure>
           )}
 
-          {/* Arquitectura 3 (046a): Escena XV · Explorable, para XV.
-              Misma lógica que las anteriores: "obra" extra SOLO en la vista
-              [XV Años], fuera del catálogo COLECCIONES (tests del museo).
-              La miniatura es una mini-escena compuesta (sin foto): cielo
-              nocturno con luna, silueta del bosque, arco de gala con
-              guirnalda de luces, mesa con candelabro y los cinco destellos
-              que se pueden descubrir — transmite la atmósfera explorable
-              de la pieza sin inventar imágenes. */}
+          {/* Arquitectura 3 (047a): Pase Privado 3D, para XV. La escena
+              exploratoria 046a se descartó y esta es la tercera pieza: una
+              tarjeta vertical de gala con física 3D, reflejo especular
+              dinámico y doble cara giratoria (frente: fecha + cuenta
+              regresiva; dorso: lugar, código, nota y RSVP). La miniatura
+              es una mini-tarjeta compuesta (sin foto): papel marfil,
+              filletes dorados, monograma, ranura del cordón, sheen en
+              diagonal y leve inclinación — transmite el objeto sin
+              inventar imágenes ni números de cuenta regresiva falsos. */}
           {filtro === "quince" && (
             <figure
               className="grupo-obra obra-entrante group"
               style={{ animationDelay: `${obras.length * 70 + 70}ms` }}
             >
               <a
-                href={rutaPublica("/escena-xv.html")}
+                href={rutaPublica("/pase-3d.html")}
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label="Abrir el prototipo Escena XV · Explorable: escena 3D con parallax y descubrimientos por tocar (abre en una pestaña nueva)"
+                aria-label="Abrir el prototipo Pase Privado 3D: tarjeta vertical de gala con física 3D y doble cara giratoria (abre en una pestaña nueva)"
               >
                 <div className="marco-obra">
                   <div className="relative aspect-[4/5] overflow-hidden rounded-[3px] bg-[#0B0805]">
-                    {/* mini-escena: capas de la noche de gala */}
-                    <svg
-                      viewBox="0 0 200 250"
-                      preserveAspectRatio="none"
+                    {/* vitrina de la mini-tarjeta */}
+                    <div
                       aria-hidden="true"
-                      className="absolute inset-0 h-full w-full"
+                      className="absolute inset-0"
+                      style={{
+                        background:
+                          "radial-gradient(95% 74% at 50% 40%, #2A1D13 0%, #191209 48%, #0B0805 100%)",
+                      }}
+                    />
+                    <div
+                      aria-hidden="true"
+                      className="absolute left-1/2 top-[44%] h-[150px] w-[210px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[rgba(194,94,122,0.16)] blur-[2px]"
+                    />
+                    {/* sombra de piso */}
+                    <div
+                      aria-hidden="true"
+                      className="absolute left-1/2 top-[78%] h-[9px] w-[116px] -translate-x-1/2 rounded-full bg-black/55 blur-[5px]"
+                    />
+                    {/* la mini-tarjeta, levemente inclinada (el centrado va
+                        en el transform inline: las clases -translate de
+                        Tailwind v4 usan la propiedad `translate` y con el
+                        transform se sumarían — doble traslación) */}
+                    <div
+                      className="absolute left-1/2 top-1/2 w-[58%]"
+                      style={{
+                        aspectRatio: "320 / 506",
+                        transform:
+                          "translate(-50%, -55%) perspective(700px) rotateX(3deg) rotateY(-6deg)",
+                      }}
                     >
-                      <defs>
-                        <linearGradient id="mini-cielo" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0%" stopColor="#0B0805" />
-                          <stop offset="55%" stopColor="#1B1410" />
-                          <stop offset="86%" stopColor="#38221C" />
-                          <stop offset="100%" stopColor="#452A21" />
-                        </linearGradient>
-                        <filter id="mini-halo" x="-140%" y="-140%" width="380%" height="380%">
-                          <feGaussianBlur stdDeviation="2.6" />
-                        </filter>
-                      </defs>
-                      <rect width="200" height="250" fill="url(#mini-cielo)" />
-                      <circle cx="148" cy="34" r="13" fill="rgba(244,241,236,.34)" filter="url(#mini-halo)" />
-                      <circle cx="148" cy="34" r="4.6" fill="rgba(244,241,236,.85)" />
-                      {/* resplandor cálido de la fiesta al fondo */}
-                      <ellipse cx="100" cy="182" rx="72" ry="26" fill="rgba(212,175,55,.14)" filter="url(#mini-halo)" />
-                      {/* bosque lejano */}
-                      <path
-                        fill="#14100C"
-                        d="M0,196 L14,196 L14,182 L22,174 L30,182 L30,196 L44,196 L44,168 L56,156 L68,168 L68,196 L84,196 L84,180 L94,172 L104,180 L104,196 L122,196 L122,170 L134,158 L146,170 L146,196 L162,196 L162,182 L172,174 L180,182 L180,196 L200,196 L200,250 L0,250 Z"
-                      />
-                      {/* arco de gala con guirnalda */}
-                      <path
-                        fill="#16110D"
-                        d="M52,250 L52,120 Q52,54 100,48 Q148,54 148,120 L148,250 L138,250 L138,124 Q138,66 100,60 Q62,66 62,124 L62,250 Z"
-                      />
-                      <ellipse cx="100" cy="52" rx="46" ry="7" fill="#191310" />
-                      <path d="M62,118 Q100,146 138,118" stroke="rgba(242,237,228,.18)" strokeWidth="0.8" fill="none" />
-                      <g>
-                        <g filter="url(#mini-halo)">
-                          <circle cx="72" cy="128" r="2.6" fill="rgba(212,175,55,.55)" />
-                          <circle cx="100" cy="140" r="2.6" fill="rgba(212,175,55,.55)" />
-                          <circle cx="128" cy="128" r="2.6" fill="rgba(212,175,55,.55)" />
-                        </g>
-                        <circle cx="72" cy="128" r="1.1" fill="#F6E7B6" />
-                        <circle cx="100" cy="140" r="1.1" fill="#F6E7B6" />
-                        <circle cx="128" cy="128" r="1.1" fill="#F6E7B6" />
-                      </g>
-                      {/* mesa de honor con candelabro */}
-                      <path
-                        fill="#120E0B"
-                        d="M0,250 L0,212 Q30,208 60,207 L140,207 Q170,208 200,212 L200,250 Z"
-                      />
-                      <g>
-                        <g filter="url(#mini-halo)">
-                          <circle cx="86" cy="188" r="2.4" fill="rgba(246,231,182,.6)" />
-                          <circle cx="100" cy="184" r="2.6" fill="rgba(246,231,182,.6)" />
-                          <circle cx="114" cy="188" r="2.4" fill="rgba(246,231,182,.6)" />
-                        </g>
-                        <path fill="#16110D" d="M84,207 L92,192 L108,192 L116,207 Z" />
-                        <rect x="97" y="192" width="6" height="4" fill="#16110D" />
-                      </g>
-                      {/* follaje enmarcando */}
-                      <ellipse cx="12" cy="24" rx="34" ry="10" fill="#0C0906" transform="rotate(-16 12 24)" />
-                      <ellipse cx="188" cy="238" rx="36" ry="11" fill="#0C0906" transform="rotate(14 188 238)" />
-                      {/* los cinco destellos que se pueden descubrir */}
-                      <g>
-                        <circle cx="62" cy="152" r="5" fill="rgba(212,175,55,.28)" filter="url(#mini-halo)" />
-                        <circle cx="62" cy="152" r="1.7" fill="#F6E7B6" />
-                        <circle cx="128" cy="94" r="5" fill="rgba(212,175,55,.28)" filter="url(#mini-halo)" />
-                        <circle cx="128" cy="94" r="1.7" fill="#F6E7B6" />
-                        <circle cx="76" cy="104" r="5" fill="rgba(212,175,55,.28)" filter="url(#mini-halo)" />
-                        <circle cx="76" cy="104" r="1.7" fill="#F6E7B6" />
-                        <circle cx="118" cy="200" r="5" fill="rgba(212,175,55,.28)" filter="url(#mini-halo)" />
-                        <circle cx="118" cy="200" r="1.7" fill="#F6E7B6" />
-                        <circle cx="144" cy="176" r="5" fill="rgba(212,175,55,.28)" filter="url(#mini-halo)" />
-                        <circle cx="144" cy="176" r="1.7" fill="#F6E7B6" />
-                      </g>
-                    </svg>
+                      <div
+                        className="relative h-full w-full overflow-hidden rounded-[14px] bg-gradient-to-b from-[#F7F4EE] via-[#F4F1EC] to-[#EBE6DA]"
+                        style={{
+                          boxShadow:
+                            "0 20px 44px -14px rgba(0,0,0,.78), inset 0 1px 0 rgba(255,255,255,.7)",
+                        }}
+                      >
+                        {/* filletes dorados dobles */}
+                        <div
+                          aria-hidden="true"
+                          className="absolute inset-[6px] rounded-[10px] border-[1.5px] border-[#8B6D2C]/60"
+                        />
+                        <div
+                          aria-hidden="true"
+                          className="absolute inset-[10px] rounded-[7px] border border-[#8B6D2C]/25"
+                        />
+                        {/* ranura del cordón */}
+                        <div
+                          aria-hidden="true"
+                          className="absolute left-1/2 top-[5.5%] h-[9px] w-[26px] -translate-x-1/2 rounded-[5px] border border-[#8B6D2C]/40 bg-[#14100C] shadow-[inset_0_2px_3px_rgba(0,0,0,.55)]"
+                        />
+                        <div className="flex h-full flex-col items-center px-[10%] pb-[8%] pt-[16%] text-center text-[#191511]">
+                          <div
+                            aria-hidden="true"
+                            className="grid h-[32px] w-[32px] place-items-center rounded-full border-[1.5px] border-[#8B6D2C]/80"
+                          >
+                            <b className="font-serif text-[16px] font-black leading-none text-[#8B6D2C]">
+                              L
+                            </b>
+                          </div>
+                          <p className="mt-[6%] font-serif text-[28px] font-black leading-none text-[#191511]">
+                            Lucía
+                          </p>
+                          <p className="mt-[3%] font-serif text-[10px] italic text-[#9E4660]">
+                            quince años
+                          </p>
+                          <div
+                            aria-hidden="true"
+                            className="mt-[6%] h-px w-[72%] bg-gradient-to-r from-transparent via-[#C39B2A] to-transparent"
+                          />
+                          <p className="mt-[6%] text-[7.5px] font-bold uppercase tracking-[0.18em] text-[#5E5850]">
+                            Sábado 13 · 03 · 2027
+                          </p>
+                          <p className="mt-[3%] text-[6.5px] font-bold uppercase tracking-[0.16em] text-[#8B6D2C]">
+                            Jardines de la Quinta
+                          </p>
+                          <span className="mt-[7%] rounded-full border border-[#C39B2A] px-[12px] py-[5px] text-[6.5px] font-bold uppercase tracking-[0.16em] text-[#8B6D2C]">
+                            Ver dorso
+                          </span>
+                          <span className="mt-auto text-[6.5px] font-semibold uppercase tracking-[0.22em] text-[#5E5850]/80">
+                            Nº 001
+                          </span>
+                        </div>
+                        {/* sheen diagonal sobre el papel */}
+                        <div
+                          aria-hidden="true"
+                          className="pointer-events-none absolute inset-0"
+                          style={{
+                            background:
+                              "linear-gradient(115deg, transparent 38%, rgba(255,252,242,.22) 48%, rgba(255,250,236,.1) 55%, transparent 64%)",
+                          }}
+                        />
+                      </div>
+                    </div>
                     {/* degradados para legibilidad del texto */}
                     <div
                       aria-hidden="true"
-                      className="absolute inset-0 bg-gradient-to-b from-[#15120E]/78 via-transparent to-[#15120E]/88"
+                      className="absolute inset-0 bg-gradient-to-b from-[#15120E]/42 via-transparent to-[#15120E]/80"
                     />
                     <div className="absolute inset-0 flex flex-col justify-between p-5 text-left sm:p-6">
                       <div>
                         <div className="flex items-baseline justify-between rounded-[2px] bg-[#15120E]/55 px-2 py-1 backdrop-blur-[2px] text-[7.5px] font-semibold uppercase tracking-[0.28em] text-[#F2EDE4]/95">
                           <span>Prototipo</span>
-                          <span className="text-[#E3A2B8]">Escena 3D</span>
+                          <span className="text-[#E3A2B8]">Pase 3D</span>
                         </div>
                         <div
                           className="mt-2 h-px w-full bg-[#F2EDE4]/35"
                           aria-hidden="true"
                         />
-                        <p className="mt-3 font-serif text-[44px] font-black leading-[0.9] text-[#F2EDE4] drop-shadow-[0_2px_14px_rgba(21,18,14,0.85)] sm:text-[52px]">
-                          Lucía
-                        </p>
-                        <p className="mt-1.5 rounded-[2px] bg-[#15120E]/55 px-2 py-1 font-serif text-[11px] italic text-[#F2EDE4] backdrop-blur-[2px] sm:text-[12px]">
-                          una escena por descubrir
-                        </p>
                       </div>
                       <div>
                         <div
@@ -468,10 +481,10 @@ export default function Colecciones() {
                         />
                         <div className="flex items-baseline justify-between text-[7.5px] uppercase tracking-[0.22em] text-[#F2EDE4]/75">
                           <span>Marzo 2027</span>
-                          <span className="text-[#E3A2B8]">05 descubrimientos</span>
+                          <span className="text-[#E3A2B8]">Doble cara · Giro 180°</span>
                         </div>
                         <p className="mt-1.5 text-[8px] uppercase tracking-[0.24em] text-[#F2EDE4]/60">
-                          Parallax 3D · Guadalajara · Sábado 13
+                          Física 3D · Guadalajara · Sábado 13
                         </p>
                       </div>
                     </div>
@@ -488,14 +501,14 @@ export default function Colecciones() {
               </a>
               <figcaption className="mt-4 text-center">
                 <p className="font-serif text-[22px] italic leading-tight text-tinta">
-                  Escena XV · Explorable
+                  Pase Privado 3D
                 </p>
                 <p className="mt-1 text-[9.5px] uppercase tracking-[0.28em] text-tinta-suave">
                   Prototipo · no es una colección
                 </p>
                 <p className="mx-auto mt-1.5 max-w-[260px] text-[12px] leading-relaxed text-tinta-media">
-                  Tercera arquitectura: parallax 3D al inclinar el móvil y
-                  cinco descubrimientos integrados en la escena.
+                  Tercera arquitectura: tarjeta de gala con física 3D,
+                  reflejo dinámico y doble cara giratoria.
                 </p>
               </figcaption>
             </figure>

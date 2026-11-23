@@ -59,39 +59,40 @@ ritmo, jerarquía y respiro visual en celular y escritorio.
   confirma en pantalla con `localStorage`: pendientes de evento real y
   backend antes de producción. `noindex` por coherencia con este repo.
 
-## Prototipo Escena XV · Explorable (046a)
+## Prototipo Pase Privado 3D (047a)
 
-**Tercera arquitectura insignia**: una invitación de XV editada como una
-**escena explorable en 3D** (`public/escena-xv.html`). El invitado no lee
-una página: mira alrededor de un jardín de gala nocturno — cielo con luna
-y estrellas, resplandor cálido en el horizonte, silueta del bosque, arco
-con guirnalda de luces, mesa de honor con candelabro y follaje
-enmarcando — y **descubre los datos de la fiesta tocando cinco
-destellos** integrados en el entorno: la fecha (con cuenta regresiva
-tipográfica), el lugar (mapa + calendario), el código de vestimenta, la
-carta de Lucía y el atril de confirmación (RSVP local + WhatsApp).
+**Tercera arquitectura insignia** — y la tercera edición de la invitación
+como objeto: una **tarjeta vertical de membresía de gala** con física 3D
+(`public/pase-3d.html`). La invitación deja de ser una página web con
+scroll y se vuelve un objeto de colección en la palma de la mano: papel
+marfil con textura fina, filletes dorados dobles, ranura del cordón,
+tipografía grabada (letterpress) y monograma en círculo.
 
-- **Profundidad 3D real:** escenario con `perspective: 1200px` +
-  `transform-style: preserve-3d`; seis capas a profundidades distintas
-  (`translateZ` con compensación de escala) que el escenario inclina con
-  `rotateY/rotateX`. El parallax se alimenta del cursor (escritorio),
-  del **arrastre táctil** ("mirar alrededor"), del **giroscopio**
-  opcional (botón *Inclinar*, con permiso iOS) y de las flechas del
-  teclado; un bucle rAF interpola todo hacia el mismo objetivo.
-- **Descubrimiento:** contador `0 / 5 descubiertos` (aria-live),
-  focos con pulso y etiqueta elegante que pasan a rosa fijo al
-  descubrirse, línea final de celebración al completar los cinco, y
-  **índice rápido** discreto para abrir cualquier dato en cualquier
-  dispositivo.
-- **Identidad Lumen Gala:** tinta nocturna + rosa + dorado, Playfair
-  Display + Archivo; sin fotos de vestido de XV y sin textos de
-  ejemplo. Sin JS, la escena se degrada a una lista editorial legible.
-  `prefers-reduced-motion`: parallax y partículas quietas, paso
-  directo.
+- **Física 3D y reflejo realista:** tarjeta de 320×506 escalada al
+  viewport; `perspective: 1400px` + `rotateX/rotateY` con interpolación
+  rAF y flotación en reposo. Cuatro entradas suman sobre un objetivo
+  común: hover del mouse, arrastre táctil (el pase queda donde se deja),
+  giroscopio opcional (botón *Inclinar*, con permiso iOS) y flechas del
+  teclado. El **brillo especular** y la sombra de piso derivan del mismo
+  estado, como si la luz viniera de una sola fuente.
+- **Doble cara con giro 180°:** el frente anuncia la fecha con cuenta
+  regresiva numérica limpia (sin relojes) y botón *VER DORSO /
+  DETALLES*; un tap corto sobre la tarjeta (o el botón) la gira y el
+  dorso reúne el lugar con botones a mapa y calendario, el código de
+  vestimenta, la nota de Lucía y la confirmación de asistencia (RSVP
+  local + WhatsApp). La inclinación y el giro se componen en wrappers
+  separados; la luz no gira con la cara.
+- **Identidad Lumen Gala:** tinta nocturna + marfil + rosa + dorado,
+  Playfair Display + Archivo; sin fotos de vestido de XV ni textos de
+  ejemplo. La página no scrollea; sin JS el pase se degrada a una lista
+  editorial legible; `prefers-reduced-motion` apaga flotación,
+  partículas y transiciones.
 
-En la galería (vista [XV Años]) vive junto a Edición Crónica y Revista
-XV · Lookbook con una miniatura compuesta que reproduce la mini-escena
-(arco, guirnalda, velas y destellos) — sin inventar imágenes.
+En la galería (vista [XV Años]) vive junto a Revista XV · Lookbook —y,
+en [Bodas], junto a Edición Crónica— con una miniatura compuesta de la
+mini-tarjeta (filletes, monograma, sheen en diagonal y leve inclinación)
+sin inventar imágenes ni números falsos. Reemplaza a la escena
+explorable 046a, descartada por decisión de dirección.
 
 ## Prototipo Revista XV · Lookbook (045a → 045d)
 
