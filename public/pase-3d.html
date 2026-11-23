@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0B0805">
+<title>Lucía — XV · Pase Privado 3D</title>
+<meta name="description" content="La fiesta de quince de Lucía como un pase privado de gala: una tarjeta vertical con física 3D, reflejo de luz dinámico y doble cara giratoria. Sábado 13 de marzo de 2027 · Guadalajara.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;0,900;1,400;1,500&family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   PASE PRIVADO 3D — prototipo lumengala 047a
+   Arquitectura 3 (edición «tarjeta de membresía de gala»): la
+   invitación deja de ser una página web con scroll y se vuelve
+   un objeto de colección en la palma de la mano. Una tarjeta
+   vertical de alta etiqueta —papel marfil, filletes dorados,
+   tipografía grabada— responde con inclinación 3D real
+   (perspective + rotateX/rotateY) al deslizar el dedo, mover el
+   teléfono (giroscopio) o las flechas del teclado, con un
+   brillo especular que sigue la luz. Un gesto o el botón la
+   giran 180°: el frente anuncia la fecha con cuenta regresiva
+   numérica; el dorso reúne lugar, código de vestimenta, la
+   nota de Lucía y la confirmación de asistencia.
+   Identidad Lumen Gala: tinta nocturna + marfil + rosa + dorado,
+   Playfair Display + Archivo (045a, a propósito).
+   Sin JS, el pase se degrada a una lista editorial legible.
+   ============================================================ */
+:root{
+  --paper:#F4F1EC;
+  --paper-2:#ECE7DD;
+  --ink:#191511;
+  --ink-soft:#5E5850;
+  --line:rgba(25,21,17,.16);
+  --oro:#C39B2A;
+  --oro-claro:#E9D28A;
+  --oro-hondo:#8B6D2C;
+  --rose:#C25E7A;
+  --rose-deep:#9E4660;
+  --rose-soft:#E3A2B8;
+  --dark:#15120E;
+  --noche:#0B0805;
+  --crema:#F2EDE4;
+  --serif:"Playfair Display",Georgia,"Times New Roman",serif;
+  --sans:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --ease:cubic-bezier(.77,0,.18,1);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{
+  font-family:var(--sans);
+  background:var(--noche);
+  color:var(--crema);
+  font-size:16px;line-height:1.6;
+  overflow:hidden;                       /* sin scroll: es un objeto, no una página */
+  -webkit-font-smoothing:antialiased;
+}
+button{font-family:inherit;cursor:pointer}
+
+/* — el escenario: vitrina oscura con luz cálida — */
+.escenario{
+  position:fixed;inset:0;overflow:hidden;
+  background:radial-gradient(95% 74% at 50% 40%,#2A1D13 0%,#191209 48%,#0B0805 100%);
+  touch-action:none;
+  cursor:grab;
+}
+.escenario.agarrando{cursor:grabbing}
+.halo{
+  position:absolute;left:50%;top:50%;width:min(94vw,620px);aspect-ratio:1;
+  transform:translate(-50%,-53%);
+  background:radial-gradient(circle,rgba(194,94,122,.13),rgba(212,175,55,.07) 46%,transparent 70%);
+  pointer-events:none;
+}
+.bokeh{
+  position:absolute;border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle,rgba(212,175,55,.7),rgba(212,175,55,.18) 46%,transparent 72%);
+  animation:flotar var(--d,10s) ease-in-out var(--t,0s) infinite alternate;
+}
+.bokeh--rosa{background:radial-gradient(circle,rgba(227,162,184,.65),rgba(227,162,184,.15) 46%,transparent 72%)}
+@keyframes flotar{
+  from{transform:translate3d(0,0,0);opacity:.3}
+  50%{opacity:.75}
+  to{transform:translate3d(var(--x,12px),var(--y,-22px),0);opacity:.45}
+}
+.vineta{
+  position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(120% 96% at 50% 44%,transparent 50%,rgba(8,6,4,.62) 100%);
+}
+
+/* — el objeto: tarjeta vertical 320×506 escalada al viewport — */
+.portalux{
+  position:absolute;inset:0;
+  display:grid;place-items:center;
+  perspective:1400px;
+}
+.escala{
+  position:relative;width:320px;height:506px;
+  transform:scale(var(--escala,1));
+}
+.sombra-piso{
+  position:absolute;left:9%;right:9%;top:522px;height:30px;
+  border-radius:50%;
+  background:radial-gradient(50% 50% at 50% 50%,rgba(0,0,0,.6),transparent 72%);
+  filter:blur(7px);
+  will-change:transform,opacity;
+}
+.inclinada{
+  position:absolute;inset:0;
+  transform-style:preserve-3d;
+  will-change:transform;
+}
+.volteada{
+  position:absolute;inset:0;
+  transform-style:preserve-3d;
+  transform:rotateY(var(--giro,0deg));
+  transition:transform .78s var(--ease);
+}
+.cara{
+  position:absolute;inset:0;
+  backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  border-radius:18px;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .05 0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23g)'/%3E%3C/svg%3E"),
+    linear-gradient(168deg,#F7F4EE 0%,var(--paper) 42%,#EBE6DA 100%);
+  color:var(--ink);
+  box-shadow:
+    0 34px 74px -22px rgba(0,0,0,.78),
+    0 6px 16px rgba(0,0,0,.38),
+    inset 0 1px 0 rgba(255,255,255,.7);
+  overflow:hidden;
+  display:flex;flex-direction:column;
+}
+/* filletes dorados dobles */
+.cara::before{
+  content:"";position:absolute;inset:7px;border-radius:12px;
+  border:1.5px solid rgba(139,109,44,.62);
+  pointer-events:none;
+}
+.cara::after{
+  content:"";position:absolute;inset:12px;border-radius:8px;
+  border:1px solid rgba(139,109,44,.26);
+  pointer-events:none;
+}
+.cara--dorso{transform:rotateY(180deg)}
+
+/* brillo especular: vive en el plano del objeto, la luz no gira con la cara */
+.brillo{
+  position:absolute;inset:-1px;border-radius:18px;
+  pointer-events:none;
+  background:radial-gradient(300px 260px at var(--sx,50%) var(--sy,40%),
+    rgba(255,252,242,.4),rgba(255,250,236,.14) 42%,transparent 68%);
+  transform:translateZ(1px);
+  opacity:var(--si,.28);
+  will-change:opacity;
+}
+
+/* — tipografía grabada y utilidades del papel — */
+.grabado{
+  color:var(--ink);
+  text-shadow:0 1px 0 rgba(255,255,255,.55),0 -.5px .5px rgba(25,21,17,.2);
+}
+.eyebrow{
+  font-size:8px;font-weight:700;letter-spacing:.34em;text-transform:uppercase;
+  color:var(--oro-hondo);
+}
+.filo{
+  height:1px;border:none;
+  background:linear-gradient(90deg,transparent,var(--oro) 18%,var(--oro-claro) 50%,var(--oro) 82%,transparent);
+}
+.filo--tenue{background:linear-gradient(90deg,transparent,rgba(139,109,44,.4) 20%,rgba(139,109,44,.4) 80%,transparent)}
+
+/* ranura del cordón: el detalle físico del pase */
+.ranura{
+  width:64px;height:11px;border-radius:6px;
+  margin:20px auto 0;
+  background:#14100C;
+  border:1px solid rgba(139,109,44,.4);
+  box-shadow:inset 0 2px 4px rgba(0,0,0,.55),0 1px 0 rgba(255,255,255,.5);
+}
+
+/* — cara frontal — */
+.frente{
+  flex:1;display:flex;flex-direction:column;align-items:center;
+  padding:16px 24px 20px;text-align:center;
+}
+.monograma{
+  margin-top:16px;width:64px;height:64px;border-radius:50%;
+  border:1.5px solid var(--oro-hondo);
+  display:grid;place-items:center;position:relative;
+}
+.monograma::before{
+  content:"";position:absolute;inset:4px;border-radius:50%;
+  border:1px solid rgba(139,109,44,.32);
+}
+.monograma b{
+  font-family:var(--serif);font-weight:900;font-size:30px;line-height:1;
+  color:var(--oro-hondo);
+  text-shadow:0 1px 0 rgba(255,255,255,.5);
+}
+.nombre{
+  margin-top:13px;
+  font-family:var(--serif);font-weight:900;font-size:44px;line-height:.98;
+}
+.quince{
+  margin-top:5px;
+  font-family:var(--serif);font-style:italic;font-size:15px;color:var(--rose-deep);
+}
+.fecha-linea{margin-top:12px;font-size:9px;font-weight:700;letter-spacing:.26em;text-transform:uppercase;color:var(--ink-soft)}
+.cuenta{display:flex;gap:7px;margin-top:12px;width:100%}
+.cuenta .cel{
+  flex:1;padding:9px 2px 7px;border:1px solid rgba(139,109,44,.34);border-radius:5px;
+  background:rgba(255,255,255,.34);
+}
+.cuenta .num{
+  font-family:var(--serif);font-weight:900;font-size:23px;line-height:1;
+  font-variant-numeric:tabular-nums;display:block;
+}
+.cuenta .lbl{
+  display:block;margin-top:5px;
+  font-size:6.5px;font-weight:700;letter-spacing:.24em;text-transform:uppercase;color:var(--ink-soft);
+}
+.lugar-linea{
+  margin-top:12px;font-size:8px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--oro-hondo);
+}
+.pie-frente{
+  margin-top:auto;width:100%;
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+}
+.serie{font-size:7px;font-weight:600;letter-spacing:.26em;text-transform:uppercase;color:var(--ink-soft)}
+.btn-pase{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:10px 18px;border-radius:999px;
+  font-size:9px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;
+  border:1px solid var(--oro);background:transparent;color:var(--oro-hondo);
+  transition:background .2s ease,transform .2s ease;
+}
+.btn-pase:hover,.btn-pase:focus-visible{background:rgba(195,155,42,.14);transform:translateY(-1px)}
+.btn-pase--solida{
+  background:linear-gradient(180deg,var(--oro-claro),var(--oro));
+  color:#241D0F;border-color:var(--oro);
+  box-shadow:0 8px 18px -8px rgba(195,155,42,.75);
+}
+.btn-pase--tinta{border-color:rgba(25,21,17,.55);color:var(--ink)}
+.btn-pase--tinta:hover{background:rgba(25,21,17,.06)}
+
+/* — cara del dorso — */
+.dorso{
+  flex:1;display:flex;flex-direction:column;
+  padding:16px 22px 12px;min-height:0;
+}
+.dorso-cuerpo{flex:1;display:flex;flex-direction:column;min-height:0}
+.bloque{padding:7px 0 0}
+.bloque+.bloque{margin-top:5px}
+.bloque .eyebrow{display:block}
+.bloque p{margin-top:4px;font-size:10.5px;line-height:1.45;color:var(--ink)}
+.bloque p strong{font-weight:700}
+.bloque small{display:block;margin-top:2px;font-size:9px;line-height:1.4;color:var(--ink-soft)}
+.duo-btns{display:flex;gap:8px;margin-top:6px}
+.duo-btns .btn-pase{padding:7px 12px;font-size:7.5px;letter-spacing:.16em}
+.lista-codigo{margin-top:5px;display:flex;flex-direction:column;gap:5px}
+.lista-codigo div{display:flex;gap:8px;align-items:baseline}
+.lista-codigo dt{flex:0 0 78px;font-size:7.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--rose-deep)}
+.lista-codigo dd{font-size:9.5px;line-height:1.4;color:var(--ink)}
+.cita{
+  margin-top:4px;
+  font-family:var(--serif);font-style:italic;font-size:10px;line-height:1.5;color:var(--ink);
+}
+.cita b{font-style:normal;font-family:var(--sans);font-weight:700;font-size:7.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--rose-deep);display:block;margin-top:3px}
+.form-rsvp{margin-top:5px;display:flex;flex-direction:column;gap:4px}
+.campo label{display:block;font-size:7px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--oro-hondo);margin-bottom:2px}
+.campo input{
+  width:100%;border:1px solid rgba(139,109,44,.4);border-radius:4px;background:rgba(255,255,255,.5);
+  padding:5px 8px;font-family:var(--sans);font-size:11.5px;color:var(--ink);
+}
+.campo input:focus{outline:none;border-color:var(--rose-deep)}
+.radio-fila{display:flex;gap:14px}.radio-fila label{white-space:nowrap}
+.radio-fila label{
+  display:inline-flex;align-items:center;gap:5px;margin:0;
+  font-size:10px;font-weight:500;color:var(--ink);
+  text-transform:none;letter-spacing:0;
+}
+.fila-pax{display:flex;gap:8px;align-items:flex-end}.fila-pax .btn-pase{flex-shrink:0}
+.fila-pax .campo{flex:1}
+.fila-pax .campo input{width:100%}
+.fila-pax .btn-pase{padding:7px 12px;font-size:7.5px;margin-bottom:1px}
+.confirmar{display:none;text-align:center;padding:8px 0 2px}
+.confirmar.esta{display:block}
+.confirmar .grande{font-family:var(--serif);font-weight:900;font-size:15px;color:var(--ink)}
+.confirmar .chico{font-size:9px;color:var(--ink-soft);margin-top:3px;line-height:1.45}
+.confirmar .btn-pase{margin-top:7px;padding:7px 13px;font-size:7.5px}
+.pie-dorso{
+  margin-top:auto;padding-top:6px;
+  display:flex;flex-direction:column;align-items:center;gap:5px;
+}
+
+/* — barandas de la vitrina — */
+.barra{
+  position:absolute;top:0;left:0;right:0;z-index:30;
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:14px clamp(14px,4vw,28px);
+  padding-top:calc(14px + env(safe-area-inset-top));
+  pointer-events:none;
+}
+.barra>*{pointer-events:auto}
+.marca{display:flex;flex-direction:column;gap:2px}
+.marca .nombre-b{font-family:var(--serif);font-weight:900;font-size:21px;line-height:1;color:var(--crema)}
+.marca .sub{font-size:8px;font-weight:600;letter-spacing:.3em;text-transform:uppercase;color:rgba(227,162,184,.9)}
+.pildora{
+  display:inline-flex;align-items:center;gap:7px;flex-shrink:0;
+  background:rgba(14,11,8,.55);border:1px solid rgba(242,237,228,.14);
+  border-radius:999px;padding:8px 14px;backdrop-filter:blur(4px);
+  color:var(--crema);font-size:8.5px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;
+  transition:border-color .25s ease,color .25s ease;
+}
+.pildora:hover,.pildora:focus-visible{border-color:rgba(227,162,184,.55);color:var(--rose-soft)}
+.pildora svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:1.6}
+.pie-pase{
+  position:absolute;left:0;right:0;bottom:0;z-index:30;
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  padding:10px 20px calc(12px + env(safe-area-inset-bottom));
+  pointer-events:none;text-align:center;
+  background:linear-gradient(180deg,transparent,rgba(8,6,4,.8) 55%);
+}
+.guia{font-size:9px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:rgba(242,237,228,.72)}
+.colofon{font-size:7.5px;font-weight:600;letter-spacing:.3em;text-transform:uppercase;color:rgba(242,237,228,.34)}
+.escena a:focus-visible,.barra button:focus-visible,.btn-pase:focus-visible{outline:2px solid rgba(227,162,184,.8);outline-offset:2px;border-radius:4px}
+
+/* — degradación sin JS: la información completa, legible — */
+.sin-js{display:none}
+html:not(.js) body{overflow:auto}
+html:not(.js) .escenario{position:static;height:auto;min-height:100dvh;overflow:visible;cursor:auto}
+html:not(.js) .portalux,html:not(.js) .barra,html:not(.js) .pie-pase,
+html:not(.js) .halo,html:not(.js) .vineta,html:not(.js) .bokeh{display:none}
+html:not(.js) .sin-js{display:block;max-width:640px;margin:0 auto;padding:48px 22px 72px}
+html:not(.js) .sin-js h1{font-family:var(--serif);font-weight:900;font-size:clamp(38px,9vw,58px);color:var(--crema);line-height:1.02}
+html:not(.js) .sin-js h1 em{font-style:italic;font-weight:400;color:var(--rose-soft)}
+html:not(.js) .sin-js p.intro{margin-top:14px;color:rgba(242,237,228,.62);font-size:14px;line-height:1.7;max-width:52ch}
+html:not(.js) .sin-js section{margin-top:30px;border-top:1px solid rgba(242,237,228,.14);padding-top:20px}
+html:not(.js) .sin-js h2{font-family:var(--serif);font-size:22px;font-weight:700;color:var(--crema)}
+html:not(.js) .sin-js p,html:not(.js) .sin-js li{color:rgba(242,237,228,.62);font-size:13.5px;line-height:1.7;margin-top:8px}
+html:not(.js) .sin-js a{color:var(--rose-soft)}
+html:not(.js) .sin-js dt{font-size:9px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--rose-soft);margin-top:12px}
+html:not(.js) .sin-js dd{color:rgba(242,237,228,.62);font-size:13px}
+html:not(.js) .sin-js dt{margin-top:12px}
+
+/* subtítulo dual: completo en escritorio, corto en móvil */
+.corta{display:none}
+@media (max-width:719px){
+  .larga{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  .corta{display:inline}
+  .marca .sub{font-size:6.5px;letter-spacing:.18em}
+}
+@media (prefers-reduced-motion:reduce){
+  .bokeh{animation:none!important}
+  .volteada{transition:none!important}
+  .btn-pase{transition:none!important}
+}
+</style>
+</head>
+<body>
+<script>document.documentElement.classList.add("js")</script>
+<div class="escenario" id="escenario" aria-label="Pase privado de gala de la fiesta de quince de Lucía">
+  <div class="halo" aria-hidden="true"></div>
+  <div id="bokeh" aria-hidden="true"></div>
+  <div class="vineta" aria-hidden="true"></div>
+
+  <!-- barra: marca + sensor de inclinación -->
+  <header class="barra">
+    <div class="marca">
+      <span class="nombre-b">Lucía</span>
+      <span class="sub"><span class="larga">Pase privado · XV años</span><span class="corta">Pase 3D · XV</span></span>
+    </div>
+    <button class="pildora" id="btn-sensor" type="button" hidden aria-label="Activar el sensor de inclinación del teléfono">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="3" width="10" height="18" rx="2.5"/><line x1="11" y1="18.6" x2="13" y2="18.6"/></svg>
+      <span>Inclinar</span>
+    </button>
+  </header>
+
+  <!-- el objeto: tarjeta vertical con doble cara -->
+  <div class="portalux">
+    <div class="escala" id="escala">
+      <div class="sombra-piso" id="sombra"></div>
+      <div class="inclinada" id="inclinada">
+        <div class="volteada" id="volteada">
+
+          <!-- FRENTE -->
+          <section class="cara cara--frente" aria-label="Frente del pase: quién celebra, fecha y cuenta regresiva">
+            <div class="ranura" aria-hidden="true"></div>
+            <div class="frente">
+              <span class="eyebrow">Pase privado · Membresía de gala</span>
+              <div class="monograma" aria-hidden="true"><b>L</b></div>
+              <h1 class="nombre grabado">Lucía</h1>
+              <p class="quince">quince años</p>
+              <hr class="filo" style="width:180px;margin-top:12px">
+              <p class="fecha-linea grabado">Sábado 13 de marzo de 2027 · 20:00 h</p>
+              <div class="cuenta" aria-hidden="true">
+                <div class="cel"><span class="num grabado" id="cd-d">—</span><span class="lbl">Días</span></div>
+                <div class="cel"><span class="num grabado" id="cd-h">—</span><span class="lbl">Horas</span></div>
+                <div class="cel"><span class="num grabado" id="cd-m">—</span><span class="lbl">Min</span></div>
+                <div class="cel"><span class="num grabado" id="cd-s">—</span><span class="lbl">Seg</span></div>
+              </div>
+              <p style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)" id="cd-sr" role="timer">Faltan días para la fiesta.</p>
+              <p class="lugar-linea">Jardines de la Quinta · Guadalajara</p>
+              <div class="pie-frente">
+                <hr class="filo filo--tenue" style="width:200px">
+                <span class="serie">Nº 001 · Serie quince</span>
+                <button class="btn-pase" id="btn-frente" type="button" aria-label="Girar el pase para ver el dorso con los detalles">
+                  Ver dorso / Detalles
+                  <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 12h14M13 6l6 6-6 6"/></svg>
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <!-- DORSO -->
+          <section class="cara cara--dorso" aria-label="Dorso del pase: lugar, código de vestimenta, nota y confirmación">
+            <div class="dorso">
+              <span class="eyebrow" style="text-align:center;display:block">Detalles del pase</span>
+              <hr class="filo" style="margin-top:7px">
+              <div class="dorso-cuerpo">
+                <div class="bloque">
+                  <span class="eyebrow">El lugar</span>
+                  <p class="grabado"><strong>Jardines de la Quinta</strong></p>
+                  <small>Guadalajara, Jalisco · ingreso por el arco.</small>
+                  <div class="duo-btns">
+                    <a class="btn-pase btn-pase--solida" href="https://www.google.com/maps/search/?api=1&query=Jardines+de+la+Quinta+Guadalajara" target="_blank" rel="noopener">Mapa</a>
+                    <a class="btn-pase btn-pase--tinta" href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=XV+de+Luc%C3%ADa&dates=20270314T020000Z%2F20270314T090000Z&location=Jardines+de+la+Quinta,+Guadalajara&details=Recepci%C3%B3n+20%3A00+%C2%B7+Vals+22%3A30" target="_blank" rel="noopener">Calendario</a>
+                  </div>
+                </div>
+                <div class="bloque">
+                  <span class="eyebrow">El código</span>
+                  <dl class="lista-codigo">
+                    <div><dt>Dress code</dt><dd>Coctel de día — sin negro formal.</dd></div>
+                    <div><dt>Tono guía</dt><dd>Rosa pálido &amp; champán.</dd></div>
+                    <div><dt>Clima</dt><dd>Tarde fresca: abrigo ligero.</dd></div>
+                  </dl>
+                </div>
+                <div class="bloque">
+                  <span class="eyebrow">La nota</span>
+                  <p class="cita">«Esta noche se escribió sola: el jardín, las luces y ustedes.»<b>— Lucía</b></p>
+                </div>
+                <div class="bloque">
+                  <span class="eyebrow">La confirmación</span>
+                  <small style="margin-top:4px">Confirmá antes del 20 de febrero.</small>
+                  <form id="rsvp-form" novalidate class="form-rsvp">
+                    <div class="campo">
+                      <label for="r-nombre">Tu nombre</label>
+                      <input type="text" id="r-nombre" autocomplete="name">
+                    </div>
+                    <div class="campo">
+                      <label>¿Asistís?</label>
+                      <div class="radio-fila">
+                        <label><input type="radio" name="asistencia" value="si"> Sí, iré</label>
+                        <label><input type="radio" name="asistencia" value="no"> No puedo</label>
+                      </div>
+                    </div>
+                    <div class="fila-pax">
+                      <div class="campo" style="flex:1">
+                        <label for="r-pax">Acompañantes</label>
+                        <input type="number" id="r-pax" min="0" max="4" value="0">
+                      </div>
+                      <button class="btn-pase btn-pase--solida" type="submit">Confirmar</button>
+                    </div>
+                  </form>
+                  <div class="confirmar" id="rsvp-confirmar" role="status">
+                    <p class="grande" id="rsvp-gracias">Gracias.</p>
+                    <p class="chico" id="rsvp-texto">Tu respuesta quedó registrada.</p>
+                    <a class="btn-pase btn-pase--tinta" id="rsvp-wa" href="https://wa.me/521234567890" target="_blank" rel="noopener">Enviar por WhatsApp</a>
+                  </div>
+                </div>
+              </div>
+              <div class="pie-dorso">
+                <hr class="filo filo--tenue" style="width:200px">
+                <span class="serie">Nº 001 · Serie quince</span>
+                <button class="btn-pase" id="btn-dorso" type="button" aria-label="Girar el pase para volver al frente">
+                  <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M20 12H6M11 6l-6 6 6 6"/></svg>
+                  Volver al frente
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <div class="brillo" id="brillo" aria-hidden="true"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- pie: guía y colofón -->
+  <div class="pie-pase">
+    <p class="guia" id="guia">Deslizá para inclinar el pase · tocá la tarjeta para girarla</p>
+    <p class="colofon">Prototipo lumengala 047a</p>
+  </div>
+</div>
+
+<!-- degradación sin JS: toda la información, legible -->
+<div class="sin-js">
+  <h1>Lucía cumple <em>quince</em></h1>
+  <p class="intro">Esta es la versión sin interactividad del pase privado. Con JavaScript activado, la tarjeta responde al deslizamiento y a la inclinación del teléfono, y gira 180° para mostrar el dorso con todos los detalles.</p>
+  <section>
+    <h2>El frente</h2>
+    <p>Lucía celebra sus quince años el <strong>sábado 13 de marzo de 2027</strong> — recepción 20:00 h, valsa 22:30 h, en Jardines de la Quinta, Guadalajara.</p>
+  </section>
+  <section>
+    <h2>El lugar</h2>
+    <p>Jardines de la Quinta, Guadalajara, Jalisco — ingreso por el arco iluminado; estacionamiento sobre el acceso principal. <a href="https://www.google.com/maps/search/?api=1&amp;query=Jardines+de+la+Quinta+Guadalajara" target="_blank" rel="noopener">Ver en el mapa</a> · <a href="https://calendar.google.com/calendar/render?action=TEMPLATE&amp;text=XV+de+Luc%C3%ADa&amp;dates=20270314T020000Z%2F20270314T090000Z&amp;location=Jardines+de+la+Quinta,+Guadalajara&amp;details=Recepci%C3%B3n+20%3A00+%C2%B7+Vals+22%3A30" target="_blank" rel="noopener">Al calendario</a></p>
+  </section>
+  <section>
+    <h2>El código</h2>
+    <dl>
+      <dt>Dress code</dt><dd>Coctel de día — espíritu de tarde: paleta clara, sin negro formal.</dd>
+      <dt>Tono guía</dt><dd>Rosa pálido &amp; champán — los colores de la decoración de la Quinta.</dd>
+      <dt>Clima</dt><dd>Tarde fresca al aire libre: llevá un abrigo ligero para la noche.</dd>
+    </dl>
+  </section>
+  <section>
+    <h2>La nota</h2>
+    <p>«Hay noches que se planean y noches que se escriben. Esta se escribió sola: el jardín, las luces y ustedes. Vengan a terminar la frase conmigo.» — Lucía.</p>
+  </section>
+  <section>
+    <h2>La confirmación</h2>
+    <p>Confirmá antes del 20 de febrero por WhatsApp: <a href="https://wa.me/521234567890" target="_blank" rel="noopener">+52 1 23 45 67 89 0</a>.</p>
+  </section>
+</div>
+<script>
+/* ============================================================
+   PASE PRIVADO 3D — motor del objeto (047a)
+   1. Física: un objetivo de inclinación (puntero, arrastre,
+      giroscopio, teclado, flotación en reposo) se interpola en
+      rAF y aplica rotateX/rotateY sobre el plano de la tarjeta;
+      el brillo especular y la sombra de piso derivan del mismo
+      estado, como si la luz viniera de una sola fuente.
+   2. Doble cara: el frente y el dorso viven en un wrapper que
+      gira 180° (por tap corto sobre la tarjeta o por botón);
+      la inclinación y el giro se componen en wrappers separados.
+   3. La página no scrollea: es un objeto en una vitrina.
+   ============================================================ */
+const CONFIG = {
+  fechaFiesta: "2027-03-13T20:00:00-06:00",   // recepción
+  whatsapp: "https://wa.me/521234567890"      // provisional
+};
+const REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const escenario = document.getElementById("escenario");
+const escalaEl = document.getElementById("escala");
+const inclinada = document.getElementById("inclinada");
+const volteada = document.getElementById("volteada");
+const brillo = document.getElementById("brillo");
+const sombra = document.getElementById("sombra");
+const guia = document.getElementById("guia");
+const clamp1 = v => Math.max(-1, Math.min(1, v));
+
+/* --- 1. escala del objeto: entero y sin scroll en cualquier pantalla --- */
+function escala() {
+  const s = Math.min(1.06, escenario.clientWidth * 0.84 / 320, escenario.clientHeight * 0.62 / 506);
+  escalaEl.style.setProperty("--escala", s.toFixed(4));
+}
+escala();
+window.addEventListener("resize", escala);
+
+/* --- 2. ambiente: bokeh generado --- */
+(() => {
+  const cont = document.getElementById("bokeh");
+  for (let i = 0; i < 10; i++) {
+    const b = document.createElement("span");
+    b.className = "bokeh" + (i % 3 === 0 ? " bokeh--rosa" : "");
+    const t = 4 + Math.random() * 7;
+    b.style.cssText = `left:${(6 + Math.random() * 88).toFixed(1)}%;top:${(8 + Math.random() * 76).toFixed(1)}%;width:${t.toFixed(1)}px;height:${t.toFixed(1)}px;--d:${(8 + Math.random() * 8).toFixed(1)}s;--t:${(Math.random() * 7).toFixed(1)}s;--x:${(Math.random() * 34 - 17).toFixed(0)}px;--y:${(-12 - Math.random() * 24).toFixed(0)}px`;
+    cont.appendChild(b);
+  }
+})();
+
+/* --- 3. física de inclinación + brillo especular --- */
+const tgt = { x: 0, y: 0 };
+const cur = { x: 0, y: 0 };
+const puntero = { x: 0, y: 0 };
+const arrastre = { activo: false, sx: 0, sy: 0, bx: 0, by: 0 };
+const giro = { x: 0, y: 0, base: null };
+const teclas = { x: 0, y: 0 };
+let ultimoInput = 0;
+
+function objetivo() {
+  return {
+    x: clamp1(puntero.x + (arrastre.bx + (arrastre.x || 0)) + giro.x + teclas.x),
+    y: clamp1(puntero.y + (arrastre.by + (arrastre.y || 0)) + giro.y + teclas.y)
+  };
+}
+function pinta(t, ahora) {
+  /* flotación en reposo: el objeto respira en su vitrina */
+  let ix = 0, iy = 0;
+  if (!REDUCED && ahora - ultimoInput > 3000) {
+    ix = Math.sin(t / 1700) * 0.09;
+    iy = Math.cos(t / 2300) * 0.06;
+  }
+  const ex = clamp1(cur.x + ix), ey = clamp1(cur.y + iy);
+  inclinada.style.transform = `rotateX(${(-ey * 13).toFixed(3)}deg) rotateY(${(ex * 17).toFixed(3)}deg)`;
+  /* la luz desliza sobre la superficie según la inclinación */
+  brillo.style.setProperty("--sx", (50 + ex * 42).toFixed(1) + "%");
+  brillo.style.setProperty("--sy", (40 + ey * 32).toFixed(1) + "%");
+  brillo.style.setProperty("--si", (0.22 + (Math.abs(ex) + Math.abs(ey)) * 0.5).toFixed(3));
+  sombra.style.transform = `translateX(${(ex * -16).toFixed(1)}px) scaleX(${(1 - Math.abs(ex) * 0.07).toFixed(3)})`;
+  sombra.style.opacity = (0.85 - Math.abs(ey) * 0.2).toFixed(3);
+}
+if (!REDUCED) {
+  const paso = t => {
+    const o = objetivo();
+    cur.x += (o.x - cur.x) * 0.1;
+    cur.y += (o.y - cur.y) * 0.1;
+    pinta(t, performance.now());
+    requestAnimationFrame(paso);
+  };
+  requestAnimationFrame(paso);
+
+  /* mouse: seguimiento suave del cursor en la vitrina */
+  escenario.addEventListener("pointermove", e => {
+    if (e.pointerType !== "mouse") return;
+    puntero.x = clamp1((e.clientX / escenario.clientWidth - 0.5) * 2 * 0.85);
+    puntero.y = clamp1((e.clientY / escenario.clientHeight - 0.5) * 2 * 0.6);
+    ultimoInput = performance.now();
+  });
+
+  /* touch: arrastrar para inclinar (el pase queda donde se deja) */
+  escenario.addEventListener("pointerdown", e => {
+    if (e.pointerType === "mouse") return;
+    if (e.target.closest("button,input,label,a,.barra,.pie-pase")) return;
+    arrastre.activo = true;
+    arrastre.cara = !!e.target.closest(".cara");
+    arrastre.t0 = performance.now();
+    arrastre.sx = e.clientX; arrastre.sy = e.clientY;
+    const o = objetivo();
+    arrastre.bx = clamp1(o.x - giro.x - teclas.x - puntero.x);
+    arrastre.by = clamp1(o.y - giro.y - teclas.y - puntero.y);
+    arrastre.x = 0; arrastre.y = 0;
+    escenario.classList.add("agarrando");
+    ultimoInput = performance.now();
+    try { escenario.setPointerCapture(e.pointerId); } catch (_) {}
+  });
+  escenario.addEventListener("pointermove", e => {
+    if (e.pointerType === "mouse" || !arrastre.activo) return;
+    const w = escenario.clientWidth || 1, h = escenario.clientHeight || 1;
+    arrastre.x = clamp1(arrastre.bx - (e.clientX - arrastre.sx) / w * 1.4) - arrastre.bx;
+    arrastre.y = clamp1(arrastre.by + (e.clientY - arrastre.sy) / h * 1.4) - arrastre.by;
+    ultimoInput = performance.now();
+  });
+  const soltar = e => {
+    if (!arrastre.activo) return;
+    arrastre.activo = false;
+    escenario.classList.remove("agarrando");
+    /* tap corto sobre la tarjeta (sin botones ni formulario): girar.
+       El objetivo se toma en pointerdown: con setPointerCapture el
+       pointerup se retargetea al escenario y perdería el destino. */
+    const dx = Math.abs(e.clientX - arrastre.sx), dy = Math.abs(e.clientY - arrastre.sy);
+    if (dx < 9 && dy < 9 && performance.now() - arrastre.t0 < 350 && arrastre.cara) {
+      giraPase();
+    }
+  };
+  escenario.addEventListener("pointerup", e => soltar(e));
+  escenario.addEventListener("pointercancel", () => { arrastre.activo = false; escenario.classList.remove("agarrando"); });
+
+  /* teclado: flechas para inclinar sin puntero fino */
+  window.addEventListener("keydown", e => {
+    if (e.key === "ArrowLeft") teclas.x = clamp1(teclas.x - 0.2);
+    else if (e.key === "ArrowRight") teclas.x = clamp1(teclas.x + 0.2);
+    else if (e.key === "ArrowUp") teclas.y = clamp1(teclas.y - 0.16);
+    else if (e.key === "ArrowDown") teclas.y = clamp1(teclas.y + 0.16);
+    else return;
+    e.preventDefault();
+    ultimoInput = performance.now();
+  });
+
+  /* giroscopio opcional (iOS pide permiso con gesto del usuario) */
+  const btnSensor = document.getElementById("btn-sensor");
+  if ("ontouchstart" in window || navigator.maxTouchPoints > 0) {
+    btnSensor.hidden = false;
+    btnSensor.addEventListener("click", async () => {
+      try {
+        if (typeof DeviceOrientationEvent !== "undefined" &&
+            typeof DeviceOrientationEvent.requestPermission === "function") {
+          const r = await DeviceOrientationEvent.requestPermission();
+          if (r !== "granted") throw new Error("permiso denegado");
+        }
+        window.addEventListener("deviceorientation", e => {
+          if (e.gamma == null) return;
+          if (giro.base === null) giro.base = { b: e.beta || 0, g: e.gamma || 0 };
+          giro.x = clamp1((e.gamma - giro.base.g) / 36);
+          giro.y = clamp1((e.beta - giro.base.b) / 32);
+          ultimoInput = performance.now();
+        });
+        btnSensor.disabled = true;
+        btnSensor.querySelector("span").textContent = "Sensor activo";
+      } catch (_) {
+        btnSensor.querySelector("span").textContent = "Sensor no disponible";
+        setTimeout(() => { btnSensor.querySelector("span").textContent = "Inclinar"; }, 2600);
+      }
+    });
+  }
+}
+
+/* --- 4. doble cara: giro 180° --- */
+let girada = false;
+function giraPase() {
+  girada = !girada;
+  volteada.style.setProperty("--giro", girada ? "180deg" : "0deg");
+  guia.textContent = girada
+    ? "El dorso — deslizá para inclinar · tocá para volver al frente"
+    : "Deslizá para inclinar el pase · tocá la tarjeta para girarla";
+}
+document.getElementById("btn-frente").addEventListener("click", giraPase);
+document.getElementById("btn-dorso").addEventListener("click", giraPase);
+
+/* --- 5. cuenta regresiva numérica (sin relojes) --- */
+const pad2 = (n, w = 2) => String(n).padStart(w, "0");
+const deadline = new Date(CONFIG.fechaFiesta).getTime();
+let timer = null;
+function tictac() {
+  const elD = document.getElementById("cd-d");
+  if (!elD) return;
+  const dif = deadline - Date.now();
+  if (dif <= 0) {
+    document.querySelector(".cuenta").innerHTML =
+      '<p style="font-family:var(--serif);font-style:italic;font-size:15px;color:var(--ink);width:100%;text-align:center;padding:8px 0">Es la noche.</p>';
+    document.getElementById("cd-sr").textContent = "Es la noche de la fiesta.";
+    clearInterval(timer);
+    return;
+  }
+  const s = Math.floor(dif / 1000);
+  const d = Math.floor(s / 86400);
+  elD.textContent = pad2(d, 3);
+  document.getElementById("cd-h").textContent = pad2(Math.floor(s / 3600) % 24);
+  document.getElementById("cd-m").textContent = pad2(Math.floor(s / 60) % 60);
+  document.getElementById("cd-s").textContent = pad2(s % 60);
+  document.getElementById("cd-sr").textContent = `Faltan ${d} días para la fiesta.`;
+}
+tictac();
+timer = setInterval(tictac, 1000);
+
+/* --- 6. RSVP sobre el dorso (prototipo, sin backend) --- */
+const form = document.getElementById("rsvp-form");
+const guardado = (() => { try { return JSON.parse(localStorage.getItem("rsvp-pase-3d") || "null"); } catch (_) { return null; } })();
+if (guardado) {
+  document.getElementById("r-nombre").value = guardado.nombre || "";
+  document.getElementById("r-pax").value = guardado.pax || 0;
+  const radio = form.querySelector(`input[name="asistencia"][value="${guardado.asistencia}"]`);
+  if (radio) radio.checked = true;
+}
+form.addEventListener("submit", e => {
+  e.preventDefault();
+  const d = {
+    nombre: document.getElementById("r-nombre").value.trim(),
+    asistencia: (form.querySelector('input[name="asistencia"]:checked') || {}).value || "",
+    pax: Math.max(0, Math.min(4, parseInt(document.getElementById("r-pax").value || "0", 10) || 0))
+  };
+  if (!d.nombre) { document.getElementById("r-nombre").focus(); return; }
+  if (!d.asistencia) { form.querySelector('input[name="asistencia"]').focus(); return; }
+  try { localStorage.setItem("rsvp-pase-3d", JSON.stringify(d)); } catch (_) {}
+  const primero = d.nombre.split(" ")[0];
+  document.getElementById("rsvp-gracias").textContent = `Gracias, ${primero}.`;
+  document.getElementById("rsvp-texto").textContent =
+    d.asistencia === "si"
+      ? (d.pax > 0
+        ? `Te esperamos el 13 de marzo — con ${d.pax} acompañante${d.pax > 1 ? "s" : ""} en la mesa.`
+        : "Te esperamos el 13 de marzo en Jardines de la Quinta.")
+      : "El pase te va a extrañar. Gracias por avisar.";
+  document.getElementById("rsvp-wa").href = `${CONFIG.whatsapp}?text=${encodeURIComponent(
+    `XV de Lucía — confirmación: ${d.nombre} · ${d.asistencia === "si" ? `ASISTO (${d.pax} acompañante${d.pax === 1 ? "" : "s"})` : "NO PUEDO"}`
+  )}`;
+  form.style.display = "none";
+  document.getElementById("rsvp-confirmar").classList.add("esta");
+});
+</script>
+
+
+</body>
+</html>

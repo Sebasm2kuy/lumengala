@@ -420,3 +420,58 @@ Registro de trabajo del repo aislado de diseño. La producción real
   tarjeta de galería).
 - Ciclo git: rama 046a-escena-3d → PR #14 → anti-fugas → merge →
   deploy Pages → verificación en vivo.
+
+## 2026-11-23 · Iteración 047a — Arquitectura 3 (v2): «Pase Privado 3D»
+
+- **Decisión de dirección:** se descarta la escena exploratoria 046a
+  (public/escena-xv.html y su tarjeta) y la tercera arquitectura se
+  rehace como **tarjeta de membresía de gala**: un objeto en la palma de
+  la mano, sin el formato de página web con scroll.
+- **El objeto (public/pase-3d.html):** tarjeta vertical 320×506 (JS la
+  escala a cualquier viewport, sin scroll) — papel marfil con grano SVG,
+  filletes dorados dobles, ranura del cordón, tipografía grabada,
+  monograma en círculo. Frente: eyebrow, monograma, Lucía / quince años,
+  dateline, cuenta regresiva numérica (DÍAS/HORAS/MIN/SEG + texto para
+  lectores), lugar, serie Nº 001 y botón VER DORSO / DETALLES. Dorso:
+  DETALLES DEL PASE — lugar con MAPA/CALENDARIO, código de vestimenta en
+  tres filas compactas, la nota de Lucía y la confirmación (nombre,
+  radios Sí, iré / No puedo, acompañantes + CONFIRMAR; localStorage
+  rsvp-pase-3d + WhatsApp, prefill al recargar).
+- **Física 3D:** perspective 1400px; wrappers separados para inclinación
+  (rotateX/rotateY con lerp 0.1 + flotación en reposo de amplitud baja
+  tras 3 s de inactividad) y giro 180° (transition var(--ease)); el
+  brillo especular (posición e intensidad) y la sombra de piso derivan
+  del mismo estado de inclinación — una sola fuente de luz. Entradas:
+  hover del mouse, arrastre táctil con captura de puntero, giroscopio
+  opcional con permiso iOS y flechas del teclado. REDUCED: sin bucle,
+  sin flotación, giro instantáneo. Sin scroll en la página.
+- **Galería:** tarjeta del Pase en [XV Años] con miniatura compuesta
+  (mini-tarjeta inclinada con filletes, monograma, sheen diagonal,
+  ranura y Nº 001) — sin fotos inventadas ni números de cuenta regresiva
+  falsos; chips «Pase 3D» y «Doble cara · Giro 180°».
+- **Hallazgos técnicos del día:** (1) el tap corto no giraba el pase:
+  setPointerCapture retargetea el pointerup al escenario, así que el
+  objetivo del gesto se toma en pointerdown (arrastre.cara) y no en el
+  evento de soltado; (2) la miniatura se corría arriba-izquierda y se
+  recortaba: las clases -translate-x/y de Tailwind v4 usan la propiedad
+  CSS `translate` y SUMAN con un transform inline que ya incluye
+  translate(-50%,-50%) — doble traslación; se quitó la clase y quedó
+  solo el transform; (3) los rects medidos devolvían tamaños
+  «imposibles» en el dorso: estaban escalados por --escala (0.817) —
+  dividir por la escala antes de comparar con el presupuesto.
+- **Calidad:** lint 0 · typecheck 0 · 13/13 tests · build EXIT=0 · HTML
+  balanceado. E2E: tilt real por mouse/touch/teclado (rotateY 10-17° con
+  sheen --sx siguiendo la luz), flip 0↔180 por tap corto y por botones
+  con guía que cambia de lado, cuenta regresiva viva (110 días + SR),
+  RSVP con confirmación y prefill, sin scroll, fits 375/667 y 1440/900,
+  consola limpia. Dorso ajustado a presupuesto exacto 395/395 (textos a
+  una línea, dos filas de formulario).
+- **Visual (VLM, 6 rondas) + verificación directa:** de FIX a GOOD —
+  ronda 1: dorso desbordado y miniatura oscura; ronda 2-3: recorte de
+  textos y medición por bloques; ronda 4: toggle .larga/.corta faltante
+  en el CSS del pase (subtítulo concatenado) y miniatura legible pero
+  con sheen fuerte; ronda 5-6: colisión de la mini-tarjeta con el cromo
+  inferior — resuelta achicando la tarjeta a 58% y sesgándola hacia
+  arriba; verificación final a la vista: tarjeta centrada, todo legible.
+- Ciclo git: rama 047a-pase-3d → PR #15 → anti-fugas → merge → deploy
+  Pages → verificación en vivo.
